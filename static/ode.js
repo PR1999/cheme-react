@@ -3,15 +3,29 @@ const board = JXG.JSXGraph.initBoard('jxgbox', {
   axis: true
 });
 
-// reactie 1 A + 2 B > 1 C
+var componentArray = [];
+var reactionArray = [];
+class Component {
+  constructor(componentName, stoic, rx) {
+    this.componentName = componentName;
+    this.stoic = stoic;
+    this.cx0 = board.create('glider', [0,10,board.defaultAxes.y], {name:componentName});
+    this.rx = rx;
 
+  }
+}
+// reactie 1 A + 2 B > 1 C\
+
+
+var X = new Component("X", 1, 3);
+componentArray.push(X);
+componentArray.forEach(element => {
+  console.log(element.componentName);
+});
 var A = 1;
-
 var B = 2;
 var C = 1;
 var timefinal = 10;
-console.log(timefinal)
-
 var sliderk = board.create('slider', [[1, 8], [8, 8], [0, 0.1, 1]], { name: 'k' })
 var ca0 = board.create('glider', [0,10,board.defaultAxes.y], {name:"Ca"})
 var cb0 = board.create('glider', [0,9,board.defaultAxes.y], {name : 'Cb', fillColor:'blue', strokeColor:'blue'})
