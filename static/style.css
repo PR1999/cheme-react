@@ -1,0 +1,41 @@
+body {
+	background-color: #d5f4ff;
+	margin:0;
+}
+#title {
+	background-color:#a7c0c8;
+	text-align: left;
+	padding:1% 5% 1% 5%;
+	font-family: "Lucida Console", "Courier New", monospace;
+	color:white;
+	height: 10%;
+}
+
+
+
+
+#clock {
+	background-color:white;
+	color:black;
+	border-radius:5%;
+	height:50px;
+	width:100px;
+	text-align:center;
+	line-height:50px;
+	float:right;
+	font-family:"Courier New", Courier, monospace;
+}
+#line {
+	border:1px;
+	height:500px;
+	width:3px;
+	float:right;
+}			
+#messageform {
+	margin:5% 5% 5% 5%;
+	float:left;
+	padding:5%;
+	background-color:white;
+	border-radius:10px;
+}
+

@@ -1,0 +1,120 @@
+<head>
+    <meta charset="UTF-8">
+    <title>ChemE.io</title>
+    
+
+
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/jsxgraph/distrib/jsxgraphcore.js"></script>
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/jsxgraph/distrib/jsxgraph.css">
+    <link rel="stylesheet" href={{ url_for('static', filename='style.css') }}>
+
+    
+    
+</head>
+<header id="title" class="small">
+    
+    <p>ChemE.io</p>
+    
+</header>
+<body>
+    <div id="jxgbox" class="jxgbox" style="width:500px; height:500px;"></div>
+    <div id="setup">
+        <p class="settinglabel">Reaction</p>
+        <div id="reaction" class='settingbox'>
+            
+            <div id="A" class="radiogroup" >
+                <label for="A1">
+                <input type="radio" id="A1" name="A" value=1 checked="checked" onchange="A = this.value; board.update();">
+                1 A</label><label for="A2">
+                <input type="radio" id="A2" name="A" value=2 onchange="A = this.value; board.update();">
+                2 A</label><label for="A3">
+                <input type="radio" id="A3" name="A" value=3 onchange="A = this.value; board.update();">
+                3 A</label>
+            </div>
+            <div class="op">
+                +
+            </div>
+            <div id="B" class="radiogroup">
+                <label for="B1">
+                <input type="radio" id="B1" name="B" value=1 onchange="B = this.value; board.update();">
+                1 B</label>
+                <label for="B2">
+                <input type="radio" id="B2" name="B" value=2 checked="checked" onchange="B = this.value; board.update();">
+                2 B</label>
+                <label for="B3">
+                <input type="radio" id="B3" name="B" value=3 onchange="B = this.value; board.update();">
+                3 B</label>
+            </div>
+            <div class="op">
+                ->
+            </div>
+            <div id="C" class="radiogroup">
+                <label for="C1">
+                <input type="radio" id="C1" name="C" value=1 checked="checked" onchange="C = this.value; board.update();">
+                1 C</label><label for="C2">
+                <input type="radio" id="C2" name="C" value=2 onchange="C = this.value; board.update();">
+                2 C</label><label for="C3">
+                <input type="radio" id="C3" name="C" value=3 onchange="C = this.value; board.update();">
+                3 C</label>
+            </div>
+        </div>
+        <p class="settinglabel">Calculation Options</p>
+        <div id=textvalues class='settingbox' >
+            
+            <label for='tf'>Time</label>
+            <input id='tf' type="number" min=0 max=100 value="10" step=1 required onchange="board.update();">
+            <label for='points'>Data Points</label>
+            <input id='points' type="number" min=50 max=999 value="100" step=10 required onchange="board.update();">
+            <input id='func1'type=text value="-0.1 *ca*cb" onchange="board.update();">
+        </div>
+    </div>
+
+</body>
+<script type="text/javascript" charset="UTF-8" src={{ url_for('static', filename='ode.js') }}></script>
+
+<style>
+    #jxgbox{
+	margin:1%;
+	float:left;
+    border: 0px;
+    }
+    #title, .small {
+	
+	padding:1%;
+	height: 5%;
+	
+    }
+    #setup {
+        display: flex;
+        flex-direction: column;
+        margin: 1%;
+    }
+    .radiogroup{
+        display: flex;
+        flex-direction: column;
+        padding: 3px;
+        
+    }
+    .op {
+        align-self: center;
+        padding: 3px;
+
+    }
+
+    .settingbox {
+        background-color: white;
+        border-radius: 5px;
+        margin: 1%;
+        padding: 3px;
+    }
+
+    .settinglabel {
+        margin:1% 1% 1% 0%;
+        font-family: "Lucida Console", "Courier New", monospace;
+    }
+
+    #reaction {
+        display: flex;
+        flex-direction: row;
+    }
+</style>
