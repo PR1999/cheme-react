@@ -58,6 +58,40 @@
                 3 C</label>
             </div>
         </div>
+        <p class="settinglabel">Kinetics <input type="checkbox" id="advkinetics" value="adv" onchange="setadvkinetics();"><label for="advkinetics">Advanced Mode</label></p>
+        
+        <div id='constants' class="settingbox">
+            <div class="slider">
+            <label for="k">k1</label> 
+            <input id="kslider"type="range" min=0 max=1 step=0.05 value=0.1 oninput="board.update(); document.getElementById('k1value').innerHTML = this.value;">
+            <p id="k1value">0.1</p>
+            </div>
+
+            <div class="slideradv" id="n1sliderbox">
+            <label for="n1slider">n1</label> 
+            <input id="n1slider"type="range" min=0 max=2 step=0.1 value=1 oninput="board.update(); document.getElementById('n1value').innerHTML = this.value;">
+            <p id="n1value">1</p>
+            </div>
+
+            <div class="slideradv" id="n2sliderbox">
+                <label for="n2slider">n2</label> 
+                <input id="n2slider"type="range" min=0 max=2 step=0.1 value=1 oninput="board.update(); document.getElementById('n2value').innerHTML = this.value;">
+                <p id="n2value">1</p>
+            </div>
+            <div id="func1dropdownbox">
+                <label for='func1dropdown'> Reaction rate</label>
+                <select id="func1dropdown"name="func1dropdown" onchange="document.getElementById('func1').value = this.value; board.update();">
+                    <option value="k1">k1</option>
+                    <option value="k1 * ca">k1 * Ca</option>
+                    <option value="k1 * cb">k1 * Cb</option>
+                    <option value="k1 * ca * cb" selected>k1 * Ca * Cb</option>
+                </select>
+            </div>
+            <div id="func1box">
+                <label for="func1">Ra</label>
+                <input id='func1'type=text value="k1 * ca * cb" onchange="board.update();">
+            </div>
+        </div>
         <p class="settinglabel">Calculation Options</p>
         <div id=textvalues class='settingbox' >
             
@@ -65,14 +99,49 @@
             <input id='tf' type="number" min=0 max=100 value="10" step=1 required onchange="board.update();">
             <label for='points'>Data Points</label>
             <input id='points' type="number" min=50 max=999 value="100" step=10 required onchange="board.update();">
-            <input id='func1'type=text value="-0.1 *ca*cb" onchange="board.update();">
+            
         </div>
     </div>
 
 </body>
+<script>
+    
+    
+
+    function setadvkinetics() {
+        let advKineticsCheckbox = document.querySelector('input[value="adv"]');
+        let n1slider = document.getElementById("n1sliderbox");
+        let n2slider = document.getElementById("n2sliderbox")
+        if(advKineticsCheckbox.checked) {
+            n1slider.style.visibility = 'visible';
+            n1slider.style.display = 'flex';
+            n2slider.style.visibility = 'visible';
+            n2slider.style.display = 'flex';
+            document.getElementById('func1').value = "k1 *(ca^n1)*(cb^n2)";
+            document.getElementById('func1box').style.visibility = 'visible';
+            document.getElementById('func1box').style.display = 'flex';
+            document.getElementById('func1dropdownbox').style.visibility = 'hidden';
+            document.getElementById('func1dropdownbox').style.display = 'none';
+        }
+         else {
+            n1slider.style.visibility = 'hidden';
+            n1slider.style.display = 'none';
+            n2slider.style.visibility = 'hidden';
+            n2slider.style.display = 'none';
+            document.getElementById('func1').value = "k1 * ca * cb";
+            document.getElementById('func1box').style.visibility = 'hidden';
+            document.getElementById('func1box').style.display = 'none';
+            document.getElementById('func1dropdownbox').style.visibility = 'visible';
+            document.getElementById('func1dropdownbox').style.display = 'flex';
+        }
+    }
+</script>
 <script type="text/javascript" charset="UTF-8" src={{ url_for('static', filename='ode.js') }}></script>
 
 <style>
+    body {
+        font-family: Arial, Helvetica, sans-serif;
+    }
     #jxgbox{
 	margin:1%;
 	float:left;
@@ -117,4 +186,21 @@
         display: flex;
         flex-direction: row;
     }
+    .slider {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+    }
+    .slideradv {
+        
+        flex-direction: row;
+        align-items: center;
+        visibility: hidden;
+        display: none;
+    }
+    #func1box {
+        visibility: hidden;
+        display: none;
+    }
+
 </style>
