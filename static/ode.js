@@ -17,29 +17,29 @@ class Component {
 // reactie 1 A + 2 B > 1 C\
 
 
-var X = new Component("X", 1, 3);
-componentArray.push(X);
-componentArray.forEach(element => {
-  console.log(element.componentName);
-});
+//var X = new Component("X", 1, 3);
+//componentArray.push(X);
+//componentArray.forEach(element => {
+//  console.log(element.componentName);
+//});
 var A = 1;
 var B = 2;
 var C = 1;
 var timefinal = 10;
-var sliderk = board.create('slider', [[1, 8], [8, 8], [0, 0.1, 1]], { name: 'k' })
+
 var ca0 = board.create('glider', [0,10,board.defaultAxes.y], {name:"Ca"})
 var cb0 = board.create('glider', [0,9,board.defaultAxes.y], {name : 'Cb', fillColor:'blue', strokeColor:'blue'})
 var cc0 = board.create('glider', [0,0,board.defaultAxes.y], {name : 'Cc', fillColor:'green', strokeColor:'green'})
 
 var inputfunc1 = document.getElementById("func1").value;
 
-var fk1 = board.jc.snippet(inputfunc1,true,'ra, ca, cb, cc');
+var fk1 = board.jc.snippet(inputfunc1,true,'k1, ca, cb, cc, n1,n2');
 
 
 function ode(){
   var tf = document.getElementById('tf').value;
   var inputfunc1 = document.getElementById("func1").value;
-  var fk1 = board.jc.snippet(inputfunc1,true,'ra, ca, cb, cc');
+  var fk1 = board.jc.snippet(inputfunc1,true,'k1, ca, cb, cc , n1, n2');
   var interval = [0,tf];
   var steps = 100;
   var stepsize = (interval[1]-interval[0]) / steps;
@@ -50,12 +50,14 @@ function ode(){
   var c = C/A;
   
   function right(t, cx) {
-    var k1 = -1 * sliderk.Value();
+    var k1 = -1 * document.getElementById("kslider").value;
+    var n1 = 1* document.getElementById("n1slider").value;
+    var n2 = 1 * document.getElementById("n2slider").value;
     var ca = cx[0];
     var cb = cx[1];
     var cc = cx[2];
   
-    var ra = fk1(1,ca,cb,cc);
+    var ra = fk1(k1,ca,cb,cc,n1,n2);
     var rb = b * ra;
     var rc = -c * ra;
   
@@ -64,7 +66,7 @@ function ode(){
   
   }
   
-  var data = JXG.Math.Numerics.rungeKutta('heun', cx0, interval, steps, right);
+  var data = JXG.Math.Numerics.rungeKutta('rk4', cx0, interval, steps, right);
 
   var time = [];
   var datca = [];
