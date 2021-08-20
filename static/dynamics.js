@@ -1,11 +1,13 @@
+// First create the board and arrays to store the reactions and components in
 const board = JXG.JSXGraph.initBoard('jxgbox', {
     boundingbox: [-0.5, 11, 11, -0.5],
     axis: true
   });
   
-
 var componentArray = [];
 var reactionArray = [];
+
+// Component class is used to create components that can be used to set up reactions give it a name like 'A', a cx0 for where you want the point to start on the Y axis, and a color :)
 class Component {
   constructor(componentName, initialcx0, color) {
     this.componentlocation = componentArray.length + 1;
@@ -15,10 +17,6 @@ class Component {
     this.rx = [];
     
     this.cx = this.cx0.Y();
-
-    
-    
-
   }
 
   rxsum() {
@@ -35,14 +33,7 @@ class Component {
   }
 }
 
-var Reactor = {
-    
-}
-
-function getcx(Component) {
-    return Component.cx
-};
-
+//use this class to create new reactions, give the component objects in an array, and an array of coefficients, negative for the reactants, positive for products, and a k value.
 class Reaction {
     constructor(reactioncomponents, coeffiencts, kvalue) {
         
@@ -76,38 +67,24 @@ class Reaction {
     }
 }
 
+//creates one function for the right hand side of the ode we want to solve in the dynode function
+function righthandside(t, cx) {
+    const dimensioncomponents = componentArray.length;
+    const dimensioncx = cx.length;
+    if(dimensioncomponents !== dimensioncx) {
+        console.log("dimensions in function right dont match")
+    }
+    let rx = [];
 
+    for(let i = 0; i < dimensioncx; i++) {
+        componentArray[i].cx = cx[i]
+        rx.push(componentArray[i].rxsum())
+        
+    }
 
-var X = new Component("X", 10,'#54b3d5');
-componentArray.push(X);
-var Y = new Component("Y",5,'#54b3d5');
-componentArray.push(Y);
+    return rx
 
-
-var Z = new Component("Z",8, '#54b3d5');
-componentArray.push(Z);
-const XY = new Reaction([X, Z,Y],[-1,-1,2], 0.1); //X + Z -> Y
-const YX = new Reaction([X,Y],[1,-1],0.05); //Y -> X
-
-const test1 = Y.rx[0]()
-const boundfuny = Y.rx[0].bind(XY);
-const resy = boundfuny();
-if (test1 !== resy) {
-    console.log("function for reaction rate is not bound correct")
 }
-
-let A = new Component("A", 10, '#82E0AA')
-componentArray.push(A)
-let B = new Component("B", 10, '#82E0AA')
-componentArray.push(B)
-let C = new Component("C", 10, '#82E0AA')
-componentArray.push(C)
-
-let ABC = new Reaction([A,B,C],[-1,-2,2],0.1)
-
-componentArray.forEach(element => {
-    console.log(element.componentName);
-  });
 
 function dynode(components) {
     let tf = 10
@@ -144,22 +121,28 @@ return {
 };
 }
 
-function righthandside(t, cx) {
-    const dimensioncomponents = componentArray.length;
-    const dimensioncx = cx.length;
-    if(dimensioncomponents !== dimensioncx) {
-        console.log("dimensions in function right dont match")
-    }
-    let rx = [];
+let X = new Component("X", 10,'#1abc9c');
+componentArray.push(X);
+let Y = new Component("Y",0,'#2ecc71');
+componentArray.push(Y);
+let Z = new Component("Z",8, '#3498db');
+componentArray.push(Z);
+let A = new Component("A", 10, '#e74c3c')
+componentArray.push(A)
+let B = new Component("B", 10, '#e67e22')
+componentArray.push(B)
+let C = new Component("C", 0, '#f1c40f')
+componentArray.push(C)
 
-    for(let i = 0; i < dimensioncx; i++) {
-        componentArray[i].cx = cx[i]
-        rx.push(componentArray[i].rxsum())
-        
-    }
+const XY = new Reaction([X, Z,Y],[-1,-1,2], 0.1); //X + Z -> Y
+const YX = new Reaction([X,Y],[1,-1],0.05); //Y -> X
+let ABC = new Reaction([A,B,C],[-1,-2,2],0.1) //A + 2B -> 2C
 
-    return rx
-
+const test1 = Y.rx[0]()
+const boundfuny = Y.rx[0].bind(XY);
+const resy = boundfuny();
+if (test1 !== resy) {
+    console.log("function for reaction rate is not bound correct")
 }
 
 let resultdynode = dynode(componentArray)
@@ -171,4 +154,5 @@ for (let j=0; j < componentArray.length; j++) {
         this.dataX = data.time;
         this.dataY = data.results[j]
     }
+    plots.push(plt);
 }
