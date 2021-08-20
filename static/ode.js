@@ -1,27 +1,5 @@
-const board = JXG.JSXGraph.initBoard('jxgbox', {
-  boundingbox: [-0.5, 11, 11, -0.5],
-  axis: true
-});
 
-var componentArray = [];
-var reactionArray = [];
-class Component {
-  constructor(componentName, stoic, rx) {
-    this.componentName = componentName;
-    this.stoic = stoic;
-    this.cx0 = board.create('glider', [0,10,board.defaultAxes.y], {name:componentName});
-    this.rx = rx;
-
-  }
-}
-// reactie 1 A + 2 B > 1 C\
-
-
-//var X = new Component("X", 1, 3);
-//componentArray.push(X);
-//componentArray.forEach(element => {
-//  console.log(element.componentName);
-//});
+/*
 var A = 1;
 var B = 2;
 var C = 1;
@@ -81,45 +59,57 @@ for (var i = 0; i < data.length; i++) {
   datcc[i] = data[i][2];
 }
 
+let a = [datca,datcb,datcc]
+
 return {
   time,
-  datca,
-  datcb,
-  datcc
+  a
 };
 
 }
-
+/*
 var result = ode();
 var time = result.time;
-var datca = result.datca;
-var datcb = result.datcb;
-var datcc = result.datcc;
-
-var pltca = board.create('curve', [time, datca], { strokeColor: 'red', strokeWidth: 2, name: 'Ca' });
-var pltcb = board.create('curve', [time, datcb], { strokeColor: 'blue', strokeWidth: 2, name: 'Cb'});
-var pltcc = board.create('curve', [time, datcc], { strokeColor: 'green', strokeWidth: 2, name: 'Cc'});
-
-pltca.updateDataArray = function() {
-  var result = ode();
-  var time = result.time;
-  var datca = result.datca;
-  this.dataX = time;
-  this.dataY = datca;
+//var datca = result.datca;
+//var datcb = result.datcb;
+//var datcc = result.datcc;
+//
+let names = ['ca','cb','cc']
+for (let j=0; j < 3; j++) {
+  let plt = board.create('curve', [result.time, result.a[j]], { strokeColor: 'green', strokeWidth: 2, name: names[j]});
+  plt.updateDataArray = function() {
+      let data = ode(componentArray);
+      let result = data.a
+      this.dataX = data.time;
+      this.dataY = result[j]
+  }
 }
 
-pltcb.updateDataArray = function() {
-  var result = ode();
-  var time = result.time;
-  var datcb = result.datcb;
-  this.dataX = time;
-  this.dataY = datcb;
-}
 
-pltcc.updateDataArray = function() {
-  var result = ode();
-  var time = result.time;
-  var datcc = result.datcc;
-  this.dataX = time;
-  this.dataY = datcc;
-}
+//var pltca = board.create('curve', [time, datca], { strokeColor: 'red', strokeWidth: 2, name: 'Ca' });
+//var pltcb = board.create('curve', [time, datcb], { strokeColor: 'blue', strokeWidth: 2, name: 'Cb'});
+//var pltcc = board.create('curve', [time, datcc], { strokeColor: 'green', strokeWidth: 2, name: 'Cc'});
+
+//pltca.updateDataArray = function() {
+//  var result = ode();
+//  var time = result.time;
+//  var datca = result.datca;
+//  this.dataX = time;
+//  this.dataY = datca;
+////}
+//
+////pltcb.updateDataArray = function() {
+//  var result = ode();
+//  var time = result.time;
+//  var datcb = result.datcb;
+//  this.dataX = time;
+//  this.dataY = datcb;
+//}
+//
+//pltcc.updateDataArray = function() {
+//  var result = ode();
+//  var time = result.time;
+//  var datcc = result.datcc;
+//  this.dataX = time;
+//  this.dataY = datcc;
+//}*/
