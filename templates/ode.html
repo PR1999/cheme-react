@@ -1,12 +1,18 @@
+<!DOCTYPE html>
 <head>
     <meta charset="UTF-8">
     <title>ChemE.io</title>
     
 
-
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.13.13/dist/katex.min.css" integrity="sha384-RZU/ijkSsFbcmivfdRBQDtwuwVqK7GMOw6IMvKyeWL2K5UAlyp6WonmB8m7Jd0Hn" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.13.13/dist/katex.min.js" integrity="sha384-pK1WpvzWVBQiP0/GjnvRxV4mOb0oxFuyRxJlk6vVw146n3egcN5C925NCP7a7BY8" crossorigin="anonymous"></script>
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/jsxgraph/distrib/jsxgraphcore.js"></script>
     <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/jsxgraph/distrib/jsxgraph.css">
     <link rel="stylesheet" href={{ url_for('static', filename='style.css') }}>
+    <script type="text/javascript" src="https://cdnjs.com/libraries/mathjs"> </script>
+    <script defer type="text/javascript" charset="UTF-8" src={{ url_for('static', filename='ux.js') }}></script>
+    <script defer type="text/javascript" charset="UTF-8" src={{ url_for('static', filename='dynamics.js') }}></script>
+    <script defer type="text/javascript" charset="UTF-8" src={{ url_for('static', filename='batch.js') }}></script>
 
     
     
@@ -17,80 +23,20 @@
     
 </header>
 <body>
-    <div id="jxgbox" class="jxgbox" style="width:500px; height:500px;"></div>
+    <div id='content'>
+    <div class='wrapjxg'>
+        <div id="jxgbox" class="jxgbox" style="width:500px; height:500px;"></div>
+    </div>'
     <div id="setup">
-        <p class="settinglabel">Reaction</p>
+        <p class="settinglabel">Reactions</p>
         <div id="reaction" class='settingbox'>
             
-            <div id="A" class="radiogroup" >
-                <label for="A1">
-                <input type="radio" id="A1" name="A" value=1 checked="checked" onchange="A = this.value; board.update();">
-                1 A</label><label for="A2">
-                <input type="radio" id="A2" name="A" value=2 onchange="A = this.value; board.update();">
-                2 A</label><label for="A3">
-                <input type="radio" id="A3" name="A" value=3 onchange="A = this.value; board.update();">
-                3 A</label>
-            </div>
-            <div class="op">
-                +
-            </div>
-            <div id="B" class="radiogroup">
-                <label for="B1">
-                <input type="radio" id="B1" name="B" value=1 onchange="B = this.value; board.update();">
-                1 B</label>
-                <label for="B2">
-                <input type="radio" id="B2" name="B" value=2 checked="checked" onchange="B = this.value; board.update();">
-                2 B</label>
-                <label for="B3">
-                <input type="radio" id="B3" name="B" value=3 onchange="B = this.value; board.update();">
-                3 B</label>
-            </div>
-            <div class="op">
-                ->
-            </div>
-            <div id="C" class="radiogroup">
-                <label for="C1">
-                <input type="radio" id="C1" name="C" value=1 checked="checked" onchange="C = this.value; board.update();">
-                1 C</label><label for="C2">
-                <input type="radio" id="C2" name="C" value=2 onchange="C = this.value; board.update();">
-                2 C</label><label for="C3">
-                <input type="radio" id="C3" name="C" value=3 onchange="C = this.value; board.update();">
-                3 C</label>
-            </div>
+            
         </div>
-        <p class="settinglabel">Kinetics <input type="checkbox" id="advkinetics" value="adv" onchange="setadvkinetics();"><label for="advkinetics">Advanced Mode</label></p>
+        <p class="settinglabel">Components</p>
         
-        <div id='constants' class="settingbox">
-            <div class="slider">
-            <label for="k">k1</label> 
-            <input id="kslider"type="range" min=0 max=1 step=0.05 value=0.1 oninput="board.update(); document.getElementById('k1value').innerHTML = this.value;">
-            <p id="k1value">0.1</p>
-            </div>
-
-            <div class="slideradv" id="n1sliderbox">
-            <label for="n1slider">n1</label> 
-            <input id="n1slider"type="range" min=0 max=2 step=0.1 value=1 oninput="board.update(); document.getElementById('n1value').innerHTML = this.value;">
-            <p id="n1value">1</p>
-            </div>
-
-            <div class="slideradv" id="n2sliderbox">
-                <label for="n2slider">n2</label> 
-                <input id="n2slider"type="range" min=0 max=2 step=0.1 value=1 oninput="board.update(); document.getElementById('n2value').innerHTML = this.value;">
-                <p id="n2value">1</p>
-            </div>
-            <div id="func1dropdownbox">
-                <label for='func1dropdown'> Reaction rate</label>
-                <select id="func1dropdown"name="func1dropdown" onchange="document.getElementById('func1').value = this.value; board.update();">
-                    <option value="k1">k1</option>
-                    <option value="k1 * ca">k1 * Ca</option>
-                    <option value="k1 * cb">k1 * Cb</option>
-                    <option value="k1 * ca * cb" selected>k1 * Ca * Cb</option>
-                </select>
-            </div>
-            <div id="func1box">
-                <label for="func1">Ra</label>
-                <input id='func1'type=text value="k1 * ca * cb" onchange="board.update();">
-            </div>
+        <div id='Components' class="settingbox">
+            
         </div>
         <p class="settinglabel">Calculation Options</p>
         <div id=textvalues class='settingbox' >
@@ -101,51 +47,30 @@
             <input id='points' type="number" min=50 max=999 value="100" step=10 required onchange="board.update();">
             
         </div>
+        <p class='settinglabel'>Math</p>
+        <div id=math class='settingbox'>
+            
+        </div>
+    </div>
     </div>
 
 </body>
-<script>
-    
-    
 
-    function setadvkinetics() {
-        let advKineticsCheckbox = document.querySelector('input[value="adv"]');
-        let n1slider = document.getElementById("n1sliderbox");
-        let n2slider = document.getElementById("n2sliderbox")
-        if(advKineticsCheckbox.checked) {
-            n1slider.style.visibility = 'visible';
-            n1slider.style.display = 'flex';
-            n2slider.style.visibility = 'visible';
-            n2slider.style.display = 'flex';
-            document.getElementById('func1').value = "k1 *(ca^n1)*(cb^n2)";
-            document.getElementById('func1box').style.visibility = 'visible';
-            document.getElementById('func1box').style.display = 'flex';
-            document.getElementById('func1dropdownbox').style.visibility = 'hidden';
-            document.getElementById('func1dropdownbox').style.display = 'none';
-        }
-         else {
-            n1slider.style.visibility = 'hidden';
-            n1slider.style.display = 'none';
-            n2slider.style.visibility = 'hidden';
-            n2slider.style.display = 'none';
-            document.getElementById('func1').value = "k1 * ca * cb";
-            document.getElementById('func1box').style.visibility = 'hidden';
-            document.getElementById('func1box').style.display = 'none';
-            document.getElementById('func1dropdownbox').style.visibility = 'visible';
-            document.getElementById('func1dropdownbox').style.display = 'flex';
-        }
-    }
-</script>
-<script type="text/javascript" charset="UTF-8" src={{ url_for('static', filename='ode.js') }}></script>
 
-<script type="text/javascript" charset="UTF-8" src={{ url_for('static', filename='dynamics.js') }}></script>
 <style>
     body {
         font-family: Arial, Helvetica, sans-serif;
+        
+    }
+
+    #content {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
     }
     #jxgbox{
 	margin:1%;
-	float:left;
+	
     border: 0px;
     }
     #title, .small {
@@ -158,6 +83,7 @@
         display: flex;
         flex-direction: column;
         margin: 1%;
+        flex-grow: 3;
     }
     .radiogroup{
         display: flex;
@@ -185,7 +111,7 @@
 
     #reaction {
         display: flex;
-        flex-direction: row;
+        flex-direction: column;
     }
     .slider {
         display: flex;
@@ -203,5 +129,53 @@
         visibility: hidden;
         display: none;
     }
+
+
+    .wrapcomponent {
+        display: flex;
+        flex-direction: row;
+        padding: 3px;
+        border-radius: 3px;
+        margin:3px;
+    }
+    
+    .reactiondiv {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        margin: 1%;
+        flex-wrap: wrap;
+    }
+    .arrow {
+        background-color: #95a5a6;
+        width: 3%;
+        height: 2px;
+        padding: 3px;
+        margin:3px;
+        margin-right: 30px;
+    }
+
+    .arrow::after {
+        content:'';
+        width:0px;
+        height: 0px;
+        position: absolute;
+        
+        border-top: 15px solid transparent;
+        border-bottom: 15px solid transparent;
+        border-left: 30px solid #95a5a6;
+        transform: translate(20px, -14px);
+        
+    }
+    input.coefInput {
+        width: 45px;
+        
+    }
+    
+
+    label.coefInput {
+        margin: 3px;
+    }
+
 
 </style>

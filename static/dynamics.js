@@ -1,21 +1,32 @@
 // First create the board and arrays to store the reactions and components in
+//todo : maybe replace with weakmap / map oid, not sure - dont think I will 
+//todo : ids might break @ coeffient input if something is a product and reactant on the same reaction;. oh well \
 const board = JXG.JSXGraph.initBoard('jxgbox', {
     boundingbox: [-0.5, 11, 11, -0.5],
     axis: true
   });
-  
+
+var runcounter = 0;
+function getRandomInt(min, max) {
+  min = Math.ceil(min);
+  max = Math.floor(max);
+  return Math.floor(Math.random() * (max - min) + min); //The maximum is exclusive and the minimum is inclusive
+}  
+
 var componentArray = [];
+var componentidmap = new Map();
 var reactionArray = [];
+var reactionidmap = new Map();
 
 // Component class is used to create components that can be used to set up reactions give it a name like 'A', a cx0 for where you want the point to start on the Y axis, and a color :)
 class Component {
   constructor(componentName, initialcx0, color) {
-    this.componentlocation = componentArray.length + 1;
+    this.componentlocation = componentArray.length;
     this.componentName = componentName;
-    this.color = color
+    this.color = color;
     this.cx0 = board.create('glider', [0,initialcx0,board.defaultAxes.y], {name:componentName, color:this.color});
     this.rx = [];
-    
+    this.id = getRandomInt(1,100000).toString().padStart(5,"0");
     this.cx = this.cx0.Y();
   }
 
@@ -23,7 +34,7 @@ class Component {
       let sumrx = 0;
       let dimension = this.rx.length
       for(let i=0;i <dimension; i++ ) {
-          sumrx = this.rx[i]() + sumrx
+          sumrx = this.rx[i](this) + sumrx
       }
       return sumrx
   }
@@ -38,9 +49,33 @@ class Reaction {
     constructor(reactioncomponents, coeffiencts, kvalue) {
         
         this.k = kvalue;
+        this.number = reactionArray.length;
+        this.reactioncomponents = reactioncomponents;
         this.reactionmap = new Map();
         this.reactants = [];
+        this.products = [];
+        this.inert =[];
+        this.id = getRandomInt(1,100000).toString().padStart(5,"0");
 
+        let defaultf =  "k"+this.number;
+        let jcvarstr = 'k' + this.number;
+        for (let i = 0; i < reactioncomponents.length; i++) {
+            jcvarstr= jcvarstr+', c' +reactioncomponents[i].componentName.toLowerCase()
+            this.reactionmap.set(reactioncomponents[i],coeffiencts[i])
+            if (coeffiencts[i] < 0) {
+                this.reactants.push(reactioncomponents[i]);
+                defaultf = defaultf + ' * '+'c'+reactioncomponents[i].componentName.toLowerCase();
+            } else if (coeffiencts[i] > 0) {
+                this.products.push(reactioncomponents[i]);
+                
+
+            }
+            
+        }
+
+        this.jcvars = jcvarstr;
+        this.jcfstr = defaultf;
+        this.jcf = board.jc.snippet(this.jcfstr,true,this.jcvars);
         function createRxFunction (component, reactants){
             function f(){
                 let cx = 1;
@@ -54,16 +89,43 @@ class Reaction {
             return f
         }
 
-        for (var i = 0; i < reactioncomponents.length;i++) {
-            this.reactionmap.set(reactioncomponents[i],coeffiencts[i])
-            if (coeffiencts[i] < 0) {
-                this.reactants.push(reactioncomponents[i]);
-            }
-            var rxfunc = createRxFunction(reactioncomponents[i]).bind(this);
-            reactioncomponents[i].rx.push(rxfunc);
+        function createjcf (component) {
             
-        };
+            function f() {
+                let args = [this.k];
+                for(let i=0;i<this.reactioncomponents.length;i++) {
+                    args.push(this.reactioncomponents[i].cx)
+                }
+            
+            let rate = this.jcf.apply(null,args); 
+            let coef = this.reactionmap.get(component);
+            rate = coef * rate
+            return rate
+            }
+            return f
+
+        }
+
+        for (let i = 0; i < reactioncomponents.length;i++) {
+            
+            var rxfunc = createRxFunction(reactioncomponents[i]).bind(this);
+            var rxjcf = createjcf(reactioncomponents[i]).bind(this);
+            reactioncomponents[i].rx.push(rxjcf);
+            
+        }
         
+    }
+
+    updatejcf(str) {
+        
+        this.jcf = board.jc.snippet(str,true,this.jcvars);
+    }
+
+    label() {
+        let labelreactants = this.reactants.map(x => (this.reactionmap.get(x)* -1).toString()+ ' ' + x.componentName).join(' + ');
+        let labelproducts = this.products.map(x => this.reactionmap.get(x).toString()+ ' ' + x.componentName).join(' + ');
+        let label = labelreactants + ' → ' + labelproducts;
+        return label
     }
 }
 
@@ -86,11 +148,8 @@ function righthandside(t, cx) {
 
 }
 
-function dynode(components) {
-    let tf = 10
-    let interval = [0,tf];
-    let steps = 100;
-    let stepsize = (interval[1]-interval[0]) / steps;
+function dynode(components, interval, steps) {
+    
     let cx0 = []
     const dimension = components.length;
     let cx = [];
@@ -100,6 +159,7 @@ function dynode(components) {
     }
 
     let data = JXG.Math.Numerics.rungeKutta('rk4', cx0, interval, steps, righthandside);
+    runcounter++;
     let time = [];
     let results = [];
 
@@ -121,38 +181,123 @@ return {
 };
 }
 
-let X = new Component("X", 10,'#1abc9c');
-componentArray.push(X);
-let Y = new Component("Y",0,'#2ecc71');
-componentArray.push(Y);
-let Z = new Component("Z",8, '#3498db');
-componentArray.push(Z);
-let A = new Component("A", 10, '#e74c3c')
-componentArray.push(A)
-let B = new Component("B", 10, '#e67e22')
-componentArray.push(B)
-let C = new Component("C", 0, '#f1c40f')
-componentArray.push(C)
+function createandstorecomponent(componentname, initialcx0, color) {
+    if (!/^[a-z0-9]+$/i.test(componentname)) {
+        console.log('invalid componentname! Please only use letters and numbers');
+        var componentname = Math.random().toString(36).substr(2, 5);
+        console.log(`new name ${componentname}`);
+    }
+    let newcomponent = new Component(componentname, initialcx0, color);
+    componentArray.push(newcomponent);
+    componentidmap.set(newcomponent.id, newcomponent);
+    
+    console.log(`created new component ${newcomponent.componentName}`);
+    let math = document.createElement('p');
+    mathstr = `\\frac{dC_{${componentname}}}{dt}=r_{${componentname.substr(0,4).toLowerCase()}}`;
+    math.innerText = mathstr
+    mathbox = document.querySelector('#math');
+    mathbox.appendChild(math);
+    katex.render(mathstr, math);
+    return newcomponent
 
-const XY = new Reaction([X, Z,Y],[-1,-1,2], 0.1); //X + Z -> Y
-const YX = new Reaction([X,Y],[1,-1],0.05); //Y -> X
-let ABC = new Reaction([A,B,C],[-1,-2,2],0.1) //A + 2B -> 2C
-
-const test1 = Y.rx[0]()
-const boundfuny = Y.rx[0].bind(XY);
-const resy = boundfuny();
-if (test1 !== resy) {
-    console.log("function for reaction rate is not bound correct")
 }
 
-let resultdynode = dynode(componentArray)
-let plots = []
-for (let j=0; j < componentArray.length; j++) {
-    let plt = board.create('curve', [resultdynode.time, resultdynode.results[j]], { strokeColor: componentArray[j].color, strokeWidth: 2, name: componentArray[j].componentName});
-    plt.updateDataArray = function() {
-        let data = dynode(componentArray);
-        this.dataX = data.time;
-        this.dataY = data.results[j]
+function newreactionDiv(reaction) {
+    
+    let newdiv = document.createElement('div');
+    
+    newdiv.id = reaction.id;
+    newdiv.classList.add('reactiondiv');
+
+    topdiv = document.querySelector('#reaction');
+    topdiv.appendChild(newdiv);
+
+    for(let i = 0;i < reaction.reactants.length;i++) {
+        let wrapcomponent = document.createElement('div')
+        wrapcomponent.classList.add('wrapcomponent');
+        wrapcomponent.style.backgroundColor = reaction.reactants[i].color +'80';
+        newdiv.appendChild(wrapcomponent);
+
+        let input1 = document.createElement('input');
+        input1.type = 'Number';
+        input1.min = 1;
+        input1.max = 99;
+        input1.id = reaction.reactants[i].id + '_' + reaction.id;
+        input1.value = -1*reaction.reactionmap.get(reaction.reactants[i]);
+        input1.classList.add('coefInput');
+        input1.setAttribute('onchange', `reactionidmap.get('${reaction.id}').reactionmap.set(componentidmap.get('${reaction.reactants[i].id}'), -1 * parseInt(this.value)); board.update();`);
+        wrapcomponent.appendChild(input1);
+
+        let label = document.createElement('label');
+        label.setAttribute('for', reaction.reactants[i].id + '_' + reaction.id);
+        label.classList.add('coefInput');
+        label.innerText = reaction.reactants[i].componentName;
+        wrapcomponent.appendChild(label);
+        
     }
-    plots.push(plt);
+
+
+    let arrow = document.createElement('div');
+    arrow.classList.add('arrow');
+    newdiv.appendChild(arrow);
+
+    for(let i = 0;i < reaction.products.length;i++) {
+        let wrapcomponent = document.createElement('div')
+        wrapcomponent.classList.add('wrapcomponent');
+        wrapcomponent.style.backgroundColor = reaction.products[i].color +'80';
+        newdiv.appendChild(wrapcomponent);
+        let input1 = document.createElement('input');
+        input1.type = 'Number';
+        input1.min = 1;
+        input1.max = 99;
+        input1.id = reaction.products[i].id + '_' + reaction.id;
+        input1.value = 1*reaction.reactionmap.get(reaction.products[i]);
+        input1.classList.add('coefInput');
+        input1.setAttribute('onchange', `reactionidmap.get('${reaction.id}').reactionmap.set(componentidmap.get('${reaction.products[i].id}'), parseInt(this.value)); board.update()`);
+
+        
+        wrapcomponent.appendChild(input1);
+        let label = document.createElement('label');
+        label.setAttribute('for', reaction.products[i].id + '_' + reaction.id);
+        label.classList.add('coefInput');
+        label.innerText = reaction.products[i].componentName;
+        wrapcomponent.appendChild(label);
+        
+    }
+
+    let kslider = document.createElement('input');
+    kslider.classList.add('slider');
+    kslider.classList.add('k-slider');
+    kslider.type = 'range';
+    kslider.min = 0;
+    kslider.max = 0.5;
+    kslider.step =0.01;
+    kslider.value = reaction.k;
+
+    kslider.id = 'k-'+reaction.id;
+    kslider.setAttribute("oninput", `reactionidmap.get('${reaction.id}').k = parseFloat(this.value); board.update(); document.getElementById('kval-${reaction.id}').innerHTML = this.value;`);
+    newdiv.appendChild(kslider);
+    let kval = document.createElement('p')
+    kval.id = 'kval-'+reaction.id;
+    kval.innerHTML = reaction.k;
+    newdiv.appendChild(kval)
+    let finput = document.createElement('input');
+    finput.type = 'text'
+    finput.value = reaction.jcfstr;
+    finput.setAttribute('onchange',  `reactionidmap.get('${reaction.id}').updatejcf(this.value); board.update();`)
+    newdiv.appendChild(finput);
+
+    
+}
+
+function createreaction(reactioncomponents, coeffiencts, kvalue) {
+    
+    
+    let newreaction = new Reaction(reactioncomponents, coeffiencts, kvalue);
+    reactionArray.push(newreaction);
+    reactionidmap.set(newreaction.id, newreaction);
+    console.log('created new reaction:  ' + newreaction.label());
+    newreactionDiv(newreaction);
+    return newreaction
+
 }
