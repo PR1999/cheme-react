@@ -15,6 +15,7 @@ let stepsize = (interval[1]-interval[0]) / steps;
 
 let resultdynode = dynode(componentArray, interval, steps);
 let plots = [];
+let plotmap = new WeakMap()
 var calctracker = 0;
 let currentresult
 for (let j=0; j < componentArray.length; j++) {
@@ -34,5 +35,6 @@ for (let j=0; j < componentArray.length; j++) {
         this.dataY = data.results[j];
     }
     plots.push(plt);
+    plotmap.set(componentArray[j], plt)
 }
 

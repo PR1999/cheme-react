@@ -1,6 +1,7 @@
 // First create the board and arrays to store the reactions and components in
 //todo : maybe replace with weakmap / map oid, not sure - dont think I will 
 //todo : ids might break @ coeffient input if something is a product and reactant on the same reaction;. oh well \
+
 const board = JXG.JSXGraph.initBoard('jxgbox', {
     boundingbox: [-0.5, 11, 11, -0.5],
     axis: true
@@ -11,7 +12,8 @@ function getRandomInt(min, max) {
   min = Math.ceil(min);
   max = Math.floor(max);
   return Math.floor(Math.random() * (max - min) + min); //The maximum is exclusive and the minimum is inclusive
-}  
+}
+
 
 var componentArray = [];
 var componentidmap = new Map();
@@ -25,9 +27,17 @@ class Component {
     this.componentName = componentName;
     this.color = color;
     this.cx0 = board.create('glider', [0,initialcx0,board.defaultAxes.y], {name:componentName, color:this.color});
+    
     this.rx = [];
+    this.rxreactionids = [];
     this.id = getRandomInt(1,100000).toString().padStart(5,"0");
     this.cx = this.cx0.Y();
+    this.cx0.on('out', function() {
+        for(let i=0; i< componentArray.length; i++) {
+            document.getElementById(componentArray[i].id + 'cx0').value = ~~(componentArray[i].getcx0() * 100) / 100
+        }
+        return 0
+    })
   }
 
   rxsum() {
@@ -42,9 +52,17 @@ class Component {
   getcx0() {
       return this.cx0.Y()
   }
+
+  setcx0(y) {
+      this.cx0.setPosition(JXG.COORDS_BY_USER, [0,y])
+      board.update();
+  }
+
+  
 }
 
 //use this class to create new reactions, give the component objects in an array, and an array of coefficients, negative for the reactants, positive for products, and a k value.
+
 class Reaction {
     constructor(reactioncomponents, coeffiencts, kvalue) {
         
@@ -111,6 +129,7 @@ class Reaction {
             var rxfunc = createRxFunction(reactioncomponents[i]).bind(this);
             var rxjcf = createjcf(reactioncomponents[i]).bind(this);
             reactioncomponents[i].rx.push(rxjcf);
+            reactioncomponents[i].rxreactionids.push(this.id);
             
         }
         
@@ -181,6 +200,44 @@ return {
 };
 }
 
+function componentdiv(component) {
+    let topdiv = document.getElementById('Components');
+    let newdiv = document.createElement('div');
+    newdiv.id = component.id;
+    let namep = document.createElement('p');
+    namep.innerText = component.componentName;
+    namep.style.backgroundColor = component.color +'80';
+    newdiv.appendChild(namep);
+
+    let innerdiv = document.createElement('div');
+    innerdiv.id = component.id+'inner';
+    innerdiv.classList.add('innerComponentDiv');
+
+    let showhide = document.createElement('div');
+    showhide.id = component.id + 'show';
+    showhide.checked = true;
+    showhide.classList.add('button')
+    
+    showhide.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-eye" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="#2c3e50" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><circle cx="12" cy="12" r="2" /><path d="M22 12c-2.667 4.667 -6 7 -10 7s-7.333 -2.333 -10 -7c2.667 -4.667 6 -7 10 -7s7.333 2.333 10 7" /></svg>';
+    showhide.setAttribute('onclick', `showhideplot('${component.id}');`);
+
+    let inputcx0 = document.createElement('input');
+    inputcx0.id = component.id+'cx0';
+    inputcx0.type = 'Number';
+    inputcx0.classList.add('numberinput');
+    inputcx0.classList.add('cx0input');
+    inputcx0.value = component.getcx0();
+    inputcx0.setAttribute('oninput', `componentidmap.get('${component.id}').setcx0(this.value)`);
+    let labelcx0 = document.createElement('label');
+    labelcx0.innerText = 'Cx0';
+
+    innerdiv.appendChild(showhide);
+    innerdiv.appendChild(labelcx0);
+    labelcx0.appendChild(inputcx0);
+    newdiv.appendChild(innerdiv);
+    topdiv.appendChild(newdiv);
+}
+
 function createandstorecomponent(componentname, initialcx0, color) {
     if (!/^[a-z0-9]+$/i.test(componentname)) {
         console.log('invalid componentname! Please only use letters and numbers');
@@ -192,6 +249,7 @@ function createandstorecomponent(componentname, initialcx0, color) {
     componentidmap.set(newcomponent.id, newcomponent);
     
     console.log(`created new component ${newcomponent.componentName}`);
+    componentdiv(newcomponent);
     let math = document.createElement('p');
     mathstr = `\\frac{dC_{${componentname}}}{dt}=r_{${componentname.substr(0,4).toLowerCase()}}`;
     math.innerText = mathstr
@@ -212,11 +270,16 @@ function newreactionDiv(reaction) {
     topdiv = document.querySelector('#reaction');
     topdiv.appendChild(newdiv);
 
+    let newdiv2 = document.createElement('div')
+    newdiv2.id = reaction.id + 'reaction'
+    newdiv2.classList.add('wrapcomponentgroup')
+    newdiv.appendChild(newdiv2)
+
     for(let i = 0;i < reaction.reactants.length;i++) {
         let wrapcomponent = document.createElement('div')
         wrapcomponent.classList.add('wrapcomponent');
         wrapcomponent.style.backgroundColor = reaction.reactants[i].color +'80';
-        newdiv.appendChild(wrapcomponent);
+        newdiv2.appendChild(wrapcomponent);
 
         let input1 = document.createElement('input');
         input1.type = 'Number';
@@ -239,13 +302,13 @@ function newreactionDiv(reaction) {
 
     let arrow = document.createElement('div');
     arrow.classList.add('arrow');
-    newdiv.appendChild(arrow);
+    newdiv2.appendChild(arrow);
 
     for(let i = 0;i < reaction.products.length;i++) {
         let wrapcomponent = document.createElement('div')
         wrapcomponent.classList.add('wrapcomponent');
         wrapcomponent.style.backgroundColor = reaction.products[i].color +'80';
-        newdiv.appendChild(wrapcomponent);
+        newdiv2.appendChild(wrapcomponent);
         let input1 = document.createElement('input');
         input1.type = 'Number';
         input1.min = 1;
@@ -264,7 +327,9 @@ function newreactionDiv(reaction) {
         wrapcomponent.appendChild(label);
         
     }
-
+    let newdiv3 = document.createElement('div');
+    newdiv3.classList.add('reactionsettingsgroup');
+    newdiv.appendChild(newdiv3);
     let kslider = document.createElement('input');
     kslider.classList.add('slider');
     kslider.classList.add('k-slider');
@@ -276,19 +341,38 @@ function newreactionDiv(reaction) {
 
     kslider.id = 'k-'+reaction.id;
     kslider.setAttribute("oninput", `reactionidmap.get('${reaction.id}').k = parseFloat(this.value); board.update(); document.getElementById('kval-${reaction.id}').innerHTML = this.value;`);
-    newdiv.appendChild(kslider);
+    newdiv3.appendChild(kslider);
     let kval = document.createElement('p')
     kval.id = 'kval-'+reaction.id;
     kval.innerHTML = reaction.k;
-    newdiv.appendChild(kval)
+    newdiv3.appendChild(kval)
     let finput = document.createElement('input');
     finput.type = 'text'
     finput.value = reaction.jcfstr;
     finput.setAttribute('onchange',  `reactionidmap.get('${reaction.id}').updatejcf(this.value); board.update();`)
-    newdiv.appendChild(finput);
+    newdiv3.appendChild(finput);
+
+    let trash = document.createElement('button');
+    trash.setAttribute('onclick', `deletereaction('${reaction.id}')`);
+    trash.classList.add('button')
+    trash.classList.add('trash')
+    trash.innerHTML = `
+    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-trash" width="24" height="24" viewBox="0 0 24 24" stroke-width="1.5" stroke="#2c3e50" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+  <line x1="4" y1="7" x2="20" y2="7" />
+  <line x1="10" y1="11" x2="10" y2="17" />
+  <line x1="14" y1="11" x2="14" y2="17" />
+  <path d="M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2 -2l1 -12" />
+  <path d="M9 7v-3a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v3" />
+</svg>`
+
+    newdiv2.appendChild(trash)
+
+    
 
     
 }
+
 
 function createreaction(reactioncomponents, coeffiencts, kvalue) {
     
@@ -300,4 +384,38 @@ function createreaction(reactioncomponents, coeffiencts, kvalue) {
     newreactionDiv(newreaction);
     return newreaction
 
+}
+
+function deletereaction(id) {
+    /*side effects to be removed when the reaction is removed:
+        - a function gets stored in the rx array for all the components in the reaction
+        -a reaction div element is created
+        - reaction is stored in reaction array
+        -reaction is stored in reactionidmap
+
+    */
+
+    let reaction = reactionidmap.get(id)
+    reactionArray.splice(reaction.number, 1)
+
+    for(let i = reaction.number; i < reactionArray.length; i++) {
+        reactionArray[i].number = i;
+    }
+
+    let reactiondiv = document.getElementById(reaction.id);
+    for(let i = 0; i< reaction.reactioncomponents.length; i++) {
+        let index = reaction.reactioncomponents[i].rxreactionids.indexOf(reaction.id);
+        if (index !== -1) {
+        reaction.reactioncomponents[i].rxreactionids.splice(index, 1);
+        reaction.reactioncomponents[i].rx.splice(index, 1);
+        }
+
+    }
+
+    reactiondiv.innerHTML = ""
+    reactiondiv.parentNode.removeChild(reactiondiv);
+    board.update()
+
+
+    
 }

@@ -2,13 +2,13 @@
 <head>
     <meta charset="UTF-8">
     <title>ChemE.io</title>
-    
+    <link rel="stylesheet" href={{ url_for('static', filename='style.css') }}>
 
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.13.13/dist/katex.min.css" integrity="sha384-RZU/ijkSsFbcmivfdRBQDtwuwVqK7GMOw6IMvKyeWL2K5UAlyp6WonmB8m7Jd0Hn" crossorigin="anonymous">
-    <script src="https://cdn.jsdelivr.net/npm/katex@0.13.13/dist/katex.min.js" integrity="sha384-pK1WpvzWVBQiP0/GjnvRxV4mOb0oxFuyRxJlk6vVw146n3egcN5C925NCP7a7BY8" crossorigin="anonymous"></script>
+    <link defer rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.13.13/dist/katex.min.css" integrity="sha384-RZU/ijkSsFbcmivfdRBQDtwuwVqK7GMOw6IMvKyeWL2K5UAlyp6WonmB8m7Jd0Hn" crossorigin="anonymous">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.13.13/dist/katex.min.js" integrity="sha384-pK1WpvzWVBQiP0/GjnvRxV4mOb0oxFuyRxJlk6vVw146n3egcN5C925NCP7a7BY8" crossorigin="anonymous"></script>
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/jsxgraph/distrib/jsxgraphcore.js"></script>
     <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/jsxgraph/distrib/jsxgraph.css">
-    <link rel="stylesheet" href={{ url_for('static', filename='style.css') }}>
+    
     <script type="text/javascript" src="https://cdnjs.com/libraries/mathjs"> </script>
     <script defer type="text/javascript" charset="UTF-8" src={{ url_for('static', filename='ux.js') }}></script>
     <script defer type="text/javascript" charset="UTF-8" src={{ url_for('static', filename='dynamics.js') }}></script>
@@ -26,19 +26,58 @@
     <div id='content'>
     <div class='wrapjxg'>
         <div id="jxgbox" class="jxgbox" style="width:500px; height:500px;"></div>
-    </div>'
+    </div>
     <div id="setup">
-        <p class="settinglabel">Reactions</p>
+        <p class="settinglabel">
+            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-exchange" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="#2c3e50" fill="none" stroke-linecap="round" stroke-linejoin="round">
+            <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+            <circle cx="5" cy="18" r="2" />
+            <circle cx="19" cy="6" r="2" />
+            <path d="M19 8v5a5 5 0 0 1 -5 5h-3l3 -3m0 6l-3 -3" />
+            <path d="M5 16v-5a5 5 0 0 1 5 -5h3l-3 -3m0 6l3 -3" />
+            </svg>Reactions 
+            <button class="create" onclick="userCreateReaction();"> 
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-square-plus" width="24" height="24" viewBox="0 0 24 24" stroke-width="1.5" stroke="#2c3e50" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                <rect x="4" y="4" width="16" height="16" rx="2" />
+                <line x1="9" y1="12" x2="15" y2="12" />
+                <line x1="12" y1="9" x2="12" y2="15" />
+                </svg>
+            </button>
+        </p>
         <div id="reaction" class='settingbox'>
             
             
         </div>
-        <p class="settinglabel">Components</p>
-        
+        <p class="settinglabel">
+            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-hexagon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="#2c3e50" fill="none" stroke-linecap="round" stroke-linejoin="round">
+            <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+            <path d="M19 6.873a2 2 0 0 1 1 1.747v6.536a2 2 0 0 1 -1.029 1.748l-6 3.833a2 2 0 0 1 -1.942 0l-6 -3.833a2 2 0 0 1 -1.029 -1.747v-6.537a2 2 0 0 1 1.029 -1.748l6 -3.572a2.056 2.056 0 0 1 2 0l6 3.573z" />
+          </svg>Components
+          <button class="create" onclick="userCreateComponent();"> 
+            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-square-plus" width="24" height="24" viewBox="0 0 24 24" stroke-width="1.5" stroke="#2c3e50" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                <rect x="4" y="4" width="16" height="16" rx="2" />
+                <line x1="9" y1="12" x2="15" y2="12" />
+                <line x1="12" y1="9" x2="12" y2="15" />
+            </svg>
+            </button>
+        </p>
         <div id='Components' class="settingbox">
             
         </div>
-        <p class="settinglabel">Calculation Options</p>
+        <p class="settinglabel">
+            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calculator" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="#2c3e50" fill="none" stroke-linecap="round" stroke-linejoin="round">
+            <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+            <rect x="4" y="3" width="16" height="18" rx="2" />
+            <rect x="8" y="7" width="8" height="3" rx="1" />
+            <line x1="8" y1="14" x2="8" y2="14.01" />
+            <line x1="12" y1="14" x2="12" y2="14.01" />
+            <line x1="16" y1="14" x2="16" y2="14.01" />
+            <line x1="8" y1="17" x2="8" y2="17.01" />
+            <line x1="12" y1="17" x2="12" y2="17.01" />
+            <line x1="16" y1="17" x2="16" y2="17.01" />
+          </svg>Calculation Options</p>
         <div id=textvalues class='settingbox' >
             
             <label for='tf'>Time</label>
@@ -52,6 +91,12 @@
             
         </div>
     </div>
+    </div>
+    <div id="overlay">
+        <div id="overlaywindow">
+            <span class="closewindow" onclick="closeoverlay()">&times;</span>
+            <div id="overlaycontent"></div>
+        </div>
     </div>
 
 </body>
@@ -72,6 +117,35 @@
 	margin:1%;
 	
     border: 0px;
+    }
+    #overlay {
+        display: none;
+        position: fixed;
+        top:0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 101;
+        background-color: rgba(0,0,0,0.5);
+    }
+
+    #overlaywindow {
+        max-width: 800px;
+        min-width: 300px;
+        min-height: 100px;
+        max-height: 80%;
+        z-index: 102;
+        background-color: white;
+        margin: 10% auto;
+        padding: 3px 15px;
+
+    }
+    
+    .closewindow {
+        float: right;
+        font-size: 24px;
+        font-weight: bold;
+        cursor: pointer;
     }
     #title, .small {
 	
@@ -102,11 +176,19 @@
         border-radius: 5px;
         margin: 1%;
         padding: 3px;
+        
     }
 
     .settinglabel {
         margin:1% 1% 1% 0%;
         font-family: "Lucida Console", "Courier New", monospace;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        background-color: white;
+        border-radius: 5px;
+        margin: 1%;
+        padding: 3px;
     }
 
     #reaction {
@@ -138,13 +220,22 @@
         border-radius: 3px;
         margin:3px;
     }
+
+    .dragcomponent {
+        min-width: 40px;
+        cursor:pointer;
+    }
     
     .reactiondiv {
         display: flex;
-        flex-direction: row;
-        align-items: center;
+        flex-direction: column;
+        
         margin: 1%;
         flex-wrap: wrap;
+        border-bottom: 2px dashed gray;
+    }
+    .reactiondiv:last-child {
+        border-bottom: transparent;
     }
     .arrow {
         background-color: #95a5a6;
@@ -153,6 +244,18 @@
         padding: 3px;
         margin:3px;
         margin-right: 30px;
+    }
+    .reactionsettingsgroup {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        align-items: center;
+    }
+    .wrapcomponentgroup {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        flex-wrap: nowrap;
     }
 
     .arrow::after {
@@ -171,11 +274,61 @@
         width: 45px;
         
     }
+    .trash {
+        margin-left: auto;
+    }
+
+    .create {
+        margin-left: auto;
+        margin-right: 1%;
+        height: 1.5rem;
+    }
+    .create>svg {
+    transform: translate(0px, -0.2rem);
+
+    }
     
 
     label.coefInput {
         margin: 3px;
     }
+    .innerComponentDiv {
+        display: flex;
+        flex-direction: column;
+        align-items: baseline;
+    }
+    #Components>div>p{
+        margin-bottom: 0.5em;
+        
+    }
+    #overlaycontent {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+    }
+
+    .optionbox {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        width: 100%;
+    }
+
+    .dropzone {
+        min-width: 100px;
+        min-height: 2em;
+        border: 1px solid #426a6d;
+        border-radius: 10px;
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+    }
+
+    .dropzone>svg {
+        
+        align-self: center;
+    }
+    
 
 
 </style>
