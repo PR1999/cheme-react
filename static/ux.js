@@ -1,3 +1,4 @@
+let colorlist = ['#1abc9c', '#2ecc71', '#3498db', '#9b59b6', '#f1c40f', '#e67e22', '#e74c3c']
 function setadvkinetics() {
     let advKineticsCheckbox = document.querySelector('input[value="adv"]');
     let n1slider = document.getElementById("n1sliderbox");
@@ -198,4 +199,71 @@ function userCreateComponent() {
     let overlay = document.getElementById('overlay');
     overlay.style.display = 'block';
     let content = document.getElementById('overlaycontent');
+    let name = document.createElement('div');
+    name.id = 'namediv'
+    let color = document.createElement('div');
+    color.id = 'colordiv'
+    let cx0 = document.createElement('div');
+    cx0.id = 'cx0div'
+
+    let labelname = document.createElement('label')
+    labelname.id = 'labelname'
+    labelname.appendChild(document.createTextNode('Name'))
+    let labelcolor = document.createElement('label')
+    labelcolor.id = 'labelcolor'
+    labelcolor.appendChild(document.createTextNode('Color'))
+    let labelcx0 = document.createElement('label')
+    labelcx0.id = 'labelcx0'
+    labelcx0.appendChild(document.createTextNode('Initial Concentration'))
+
+    let inputname = document.createElement('input')
+    inputname.id = 'inputname'
+    inputname.type = 'text'
+    let inputcolor = document.createElement('input')
+    inputcolor.id = 'inputcolor'
+    inputcolor.type = 'color'
+    inputcolor.value = colorlist[getRandomInt(0, colorlist.length)];
+    let inputcx0 = document.createElement('input')
+    inputcx0.id = 'inputcx0'
+    inputcx0.type = 'number'
+    inputcx0.value = 0
+
+    let next = document.createElement('button');
+    next.innerText = 'Next'
+    next.classList.add('formbutton')
+    next.id = 'componentformbutton'
+    next.addEventListener('click', componentForm)
+    
+
+    name.appendChild(labelname)
+    name.appendChild(inputname)
+    color.appendChild(labelcolor)
+    color.appendChild(inputcolor)
+    cx0.appendChild(labelcx0)
+    cx0.appendChild(inputcx0)
+
+    content.appendChild(name)
+    content.appendChild(color)
+    content.appendChild(cx0)
+    content.appendChild(next)
 }
+
+function componentForm() {
+    inputname = document.getElementById('inputname').value;
+    inputcolor = document.getElementById('inputcolor').value;
+    inputcx0 = document.getElementById('inputcx0').value;
+
+    console.log(`input = name: ${inputname}, color: ${inputcolor}, cx0: ${inputcx0}`)
+    let validname =  (/^[a-z0-9]+$/i.test(inputname))
+    
+    let validcolor = (/^#([0-9A-F]{3}){1,2}$/i.test(inputcolor))
+    let validcx0 = (Number.isNaN(Number(inputcx0)) ? false : Number.isFinite(Number(inputcx0)) && Number(inputcx0) >= 0)
+    console.log(`valid = name: ${validname}, color: ${validcolor}, cx0: ${validcx0}`)
+    console.log(Number(inputcx0))
+    let validinput = validcx0 && validcolor && validname
+
+    if (validinput) {
+        createandstorecomponent(inputname, Number(inputcx0), inputcolor)
+    }
+}
+

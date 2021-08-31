@@ -8,6 +8,7 @@ const R1 = createreaction([A, B,C,D],[-1,-1,1,1], 0.1); //A + B > C+ D
 const R2 = createreaction([D,B,E],[-1,-1,2],0.05); //D +B >E
 let R3 = createreaction([E,C,A],[-1,-1,2],0.1); 
 
+/*
 let tf = 10
 let interval = [0,tf];
 let steps = 100;
@@ -18,6 +19,8 @@ let plots = [];
 let plotmap = new WeakMap()
 var calctracker = 0;
 let currentresult
+*/
+/*
 for (let j=0; j < componentArray.length; j++) {
     let plt = board.create('curve', [resultdynode.time, resultdynode.results[j]], { strokeColor: componentArray[j].color, strokeWidth: 2, name: componentArray[j].componentName});
     plt.updateDataArray = function() {
@@ -36,5 +39,5 @@ for (let j=0; j < componentArray.length; j++) {
     }
     plots.push(plt);
     plotmap.set(componentArray[j], plt)
-}
+}*/
 

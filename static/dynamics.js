@@ -4,7 +4,8 @@
 
 const board = JXG.JSXGraph.initBoard('jxgbox', {
     boundingbox: [-0.5, 11, 11, -0.5],
-    axis: true
+    axis: true,
+    showCopyright: false
   });
 
 var runcounter = 0;
@@ -19,6 +20,9 @@ var componentArray = [];
 var componentidmap = new Map();
 var reactionArray = [];
 var reactionidmap = new Map();
+let plotmap = new WeakMap()
+var calctracker = 0;
+let currentresult
 
 // Component class is used to create components that can be used to set up reactions give it a name like 'A', a cx0 for where you want the point to start on the Y axis, and a color :)
 class Component {
@@ -168,7 +172,7 @@ function righthandside(t, cx) {
 }
 
 function dynode(components, interval, steps) {
-    
+    let stepsize = (interval[1]-interval[0]) / steps;
     let cx0 = []
     const dimension = components.length;
     let cx = [];
@@ -231,9 +235,26 @@ function componentdiv(component) {
     let labelcx0 = document.createElement('label');
     labelcx0.innerText = 'Cx0';
 
+    let trash = document.createElement('button');
+    trash.classList.add('button')
+    trash.classList.add('trash')
+    trash.setAttribute('onclick', `deletecomponent('${component.id}')`);
+    trash.innerHTML = `
+    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-trash" width="24" height="24" viewBox="0 0 24 24" stroke-width="1.5" stroke="#2c3e50" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+  <line x1="4" y1="7" x2="20" y2="7" />
+  <line x1="10" y1="11" x2="10" y2="17" />
+  <line x1="14" y1="11" x2="14" y2="17" />
+  <path d="M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2 -2l1 -12" />
+  <path d="M9 7v-3a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v3" />
+</svg>`
+
+    
+
     innerdiv.appendChild(showhide);
     innerdiv.appendChild(labelcx0);
     labelcx0.appendChild(inputcx0);
+    innerdiv.appendChild(trash);
     newdiv.appendChild(innerdiv);
     topdiv.appendChild(newdiv);
 }
@@ -247,7 +268,7 @@ function createandstorecomponent(componentname, initialcx0, color) {
     let newcomponent = new Component(componentname, initialcx0, color);
     componentArray.push(newcomponent);
     componentidmap.set(newcomponent.id, newcomponent);
-    
+    addPlot(newcomponent);
     console.log(`created new component ${newcomponent.componentName}`);
     componentdiv(newcomponent);
     let math = document.createElement('p');
@@ -257,6 +278,33 @@ function createandstorecomponent(componentname, initialcx0, color) {
     mathbox.appendChild(math);
     katex.render(mathstr, math);
     return newcomponent
+
+}
+
+function addPlot(component) {
+    let j = component.componentlocation;
+    let tf = 10
+    let interval = [0,tf];
+    let steps = 100;
+    
+
+    let resultdynode = dynode(componentArray, interval, steps);
+    let plt = board.create('curve', [resultdynode.time, resultdynode.results[j]], { strokeColor: component.color, strokeWidth: 2, name: component.componentName});
+    plt.updateDataArray = function() {
+        let j = component.componentlocation;
+        let data
+        if (calctracker === 0) {
+        currentresult = dynode(componentArray, interval, steps);
+        }
+        data = currentresult;
+        calctracker++;
+        if (calctracker === componentArray.length) {
+            calctracker = 0;
+        }
+        this.dataX = data.time;
+        this.dataY = data.results[j];
+    }
+    plotmap.set(component, plt);
 
 }
 
@@ -418,4 +466,44 @@ function deletereaction(id) {
 
 
     
+}
+
+function deletecomponent(id) {
+    /* side effects 
+    reactions delete using the ids stored in rxreactionids
+    */
+    let component = componentidmap.get(id);
+    let reactions = [...component.rxreactionids];
+    let location = component.componentlocation;
+    board.suspendUpdate();
+
+    if (reactions.length !== 0) {
+    for(let i = 0; i<reactions.length; i++) {
+        deletereaction(reactions[i])
+    }}
+
+    
+
+    componentArray.splice(location, 1);
+    componentidmap.delete(id)
+
+    for(let i = 0; i < componentArray.length;i++) {
+        componentArray[i].componentlocation = i;
+    }
+     
+    
+    board.removeObject(component.cx0);
+    let plot = plotmap.get(component)
+    plotmap.delete(component)
+    board.removeObject(plot);
+    board.unsuspendUpdate();
+
+    
+
+    let div = document.getElementById(id);
+    div.parentNode.removeChild(div);
+}
+
+function testupdate() {
+    board.update();
 }
