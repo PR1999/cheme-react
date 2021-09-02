@@ -281,11 +281,13 @@ function createandstorecomponent(componentname, initialcx0, color) {
 
 }
 
+let tf = 10
+let interval = [0,tf];
+let steps = 100;
+
 function addPlot(component) {
     let j = component.componentlocation;
-    let tf = 10
-    let interval = [0,tf];
-    let steps = 100;
+    
     
 
     let resultdynode = dynode(componentArray, interval, steps);
@@ -470,7 +472,13 @@ function deletereaction(id) {
 
 function deletecomponent(id) {
     /* side effects 
-    reactions delete using the ids stored in rxreactionids
+    reactions : delete using the ids stored in rxreactionids
+    componentArray: verwijder en update de locaties voor de andere componenten
+    verwijder uit de componentIDmap 
+    Verwijder glider van board
+    verwijder plot van board
+    verwijder plot uit plotmap
+
     */
     let component = componentidmap.get(id);
     let reactions = [...component.rxreactionids];

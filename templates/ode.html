@@ -16,12 +16,13 @@
     
     
 </head>
+<body>
 <header id="title" class="small">
     
     <p>ChemE.io</p>
     
 </header>
-<body>
+
     <div id='content'>
     <div class='wrapjxg'>
         <div id="jxgbox" class="jxgbox" style="width:500px; height:500px;"></div>
@@ -80,9 +81,9 @@
         <div id=textvalues class='settingbox' >
             
             <label for='tf'>Time</label>
-            <input id='tf' type="number" min=0 max=100 value="10" step=1 required onchange="board.update();">
+            <input id='tf' type="number" min=0 max=100 value="10" step=1 required onchange="tf = this.value; interval = [0,tf];board.update();">
             <label for='points'>Data Points</label>
-            <input id='points' type="number" min=50 max=999 value="100" step=10 required onchange="board.update();">
+            <input id='points' type="number" min=50 max=999 value="100" step=10 required onchange="steps = this.value;board.update();">
             
         </div>
         <p class='settinglabel'>Math</p>
