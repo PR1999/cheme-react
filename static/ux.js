@@ -241,3 +241,47 @@ function componentForm() {
     }
 }
 
+function TouchUserCreateReaction() {
+
+    let overlay = document.getElementById('overlay');
+    overlay.style.display = 'block';
+    let content = document.getElementById('overlaycontent');
+    let reactants = document.createElement('div');
+    reactants.id = "reactanttbox";
+    reactants.classList.add('componentbox');
+    let products = document.createElement('div');
+    products.id = "productbox";
+    products.classList.add('componentbox');
+
+
+
+    for(let i = 0;i < componentArray.length;i++) {
+        let component = document.createElement('div')
+        component.classList.add('wrapcomponent');
+        component.setAttribute('data-id', componentArray[i].id);
+        component.style.backgroundColor = componentArray[i].color +'80';
+
+        let checkbox = document.createElement('input');
+        checkbox.type = 'Checkbox';
+        checkbox.id = componentArray[i].id + '_checkbox1'
+
+        checkbox.classList.add('selcomponent');
+        component.appendChild(checkbox);
+
+        let label = document.createElement('label');
+        label.setAttribute('for', componentArray[i].id + '_checkbox');
+        label.innerText = componentArray[i].componentName;
+        component.appendChild(label);
+        let component2 = component.cloneNode(true);
+        component2.firstChild.id = componentArray[i].id + '_checkbox2'
+        reactants.appendChild(component2);
+        products.appendChild(component);
+        
+    }
+
+    
+
+    content.appendChild(reactants);
+    content.appendChild(products);
+}
+
