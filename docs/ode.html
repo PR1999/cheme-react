@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ChemE.io</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+
+    <link defer rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.13.13/dist/katex.min.css" integrity="sha384-RZU/ijkSsFbcmivfdRBQDtwuwVqK7GMOw6IMvKyeWL2K5UAlyp6WonmB8m7Jd0Hn" crossorigin="anonymous">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.13.13/dist/katex.min.js" integrity="sha384-pK1WpvzWVBQiP0/GjnvRxV4mOb0oxFuyRxJlk6vVw146n3egcN5C925NCP7a7BY8" crossorigin="anonymous"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/jsxgraph/distrib/jsxgraphsrc.js"></script>
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/jsxgraph/distrib/jsxgraph.css">
+    
+    <script defer type="text/javascript" charset="UTF-8" src="ux.js"></script>
+    <script defer type="text/javascript" charset="UTF-8" src="dynamics.js"></script>
+    <script defer type="text/javascript" charset="UTF-8" src="batch.js"></script>
+
+    
+    
+</head>
+<body>
+<header id="title" class="small">
+    
+    <h3><a href="{{url_for('ode')}}">ChemE.io</a></h3>
+    
+</header>
+
+    <div id='content'>
+    <div class='wrapjxg'>
+        <div id="jxgbox" class="jxgbox"></div>
+    </div>
+    <div id="setup">
+        <details open><summary>
+        <p class="settinglabel">
+            <svg xmlns="https://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-exchange" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="#2c3e50" fill="none" stroke-linecap="round" stroke-linejoin="round">
+            <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+            <circle cx="5" cy="18" r="2" />
+            <circle cx="19" cy="6" r="2" />
+            <path d="M19 8v5a5 5 0 0 1 -5 5h-3l3 -3m0 6l-3 -3" />
+            <path d="M5 16v-5a5 5 0 0 1 5 -5h3l-3 -3m0 6l3 -3" />
+            </svg>Reactions 
+            
+            <button class="create" onclick="TouchUserCreateReaction();"> 
+                <svg xmlns="https://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-square-plus" width="24" height="24" viewBox="0 0 24 24" stroke-width="1.5" stroke="#2c3e50" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                <rect x="4" y="4" width="16" height="16" rx="2" />
+                <line x1="9" y1="12" x2="15" y2="12" />
+                <line x1="12" y1="9" x2="12" y2="15" />
+                </svg>
+            </button>
+        </p></summary>
+        <div id="reaction" class='settingbox'>
+            
+            
+        </div></details>
+        <details open><summary>
+        <p class="settinglabel">
+            <svg xmlns="https://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-hexagon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="#2c3e50" fill="none" stroke-linecap="round" stroke-linejoin="round">
+            <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+            <path d="M19 6.873a2 2 0 0 1 1 1.747v6.536a2 2 0 0 1 -1.029 1.748l-6 3.833a2 2 0 0 1 -1.942 0l-6 -3.833a2 2 0 0 1 -1.029 -1.747v-6.537a2 2 0 0 1 1.029 -1.748l6 -3.572a2.056 2.056 0 0 1 2 0l6 3.573z" />
+          </svg>Components
+          <button class="create" onclick="userCreateComponent();"> 
+            <svg xmlns="https://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-square-plus" width="24" height="24" viewBox="0 0 24 24" stroke-width="1.5" stroke="#2c3e50" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                <rect x="4" y="4" width="16" height="16" rx="2" />
+                <line x1="9" y1="12" x2="15" y2="12" />
+                <line x1="12" y1="9" x2="12" y2="15" />
+            </svg>
+            </button>
+        </p></summary>
+        <div id='Components' class="settingbox">
+            
+        </div></details>
+        <details open><summary>
+        <p class="settinglabel">
+            <svg xmlns="https://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calculator" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="#2c3e50" fill="none" stroke-linecap="round" stroke-linejoin="round">
+            <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+            <rect x="4" y="3" width="16" height="18" rx="2" />
+            <rect x="8" y="7" width="8" height="3" rx="1" />
+            <line x1="8" y1="14" x2="8" y2="14.01" />
+            <line x1="12" y1="14" x2="12" y2="14.01" />
+            <line x1="16" y1="14" x2="16" y2="14.01" />
+            <line x1="8" y1="17" x2="8" y2="17.01" />
+            <line x1="12" y1="17" x2="12" y2="17.01" />
+            <line x1="16" y1="17" x2="16" y2="17.01" />
+          </svg>Calculation Options</p></summary>
+        <div id=textvalues class='settingbox' >
+            
+            <label for='tf'>Time</label>
+            <input id='tf' type="number" min=0 max=100 value="10" step=1 required onchange="tf = this.value; interval = [0,tf];board.update();">
+            <label for='points'>Data Points</label>
+            <input id='points' type="number" min=50 max=999 value="100" step=10 required onchange="steps = this.value;board.update();">
+            
+        </div></details>
+        <details open><summary>
+        <p class='settinglabel'>
+            <svg xmlns="https://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-math" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="#000000" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                <path d="M16 13l4 4m0 -4l-4 4" />
+                <path d="M20 5h-7l-4 14l-3 -6h-2" />
+              </svg>
+            Math
+        </p></summary>
+        <div id=math class='settingbox'>
+            
+        </div></details>
+    </div>
+    </div>
+    <div id="overlay">
+        <div id="overlaywindow">
+            <span class="closewindow" onclick="closeoverlay()">&times;</span>
+            <div id="overlaycontent"></div>
+        </div>
+    </div>
+
+</body>

@@ -1,0 +1,269 @@
+body {
+	background-color: cornflowerblue;
+	margin:0;
+	/*font-family: Arial, Helvetica, sans-serif; F7FAFC*/
+	/*font-family: 'Sintony', sans-serif;*/
+	font-family: 'Source Sans Pro', sans-serif;
+	
+}
+#title {
+	text-align: left;
+	padding:1% 5% 1% 5%;
+	font-family: 'Source Sans Pro', sans-serif;
+	/*font-family: "Lucida Console", "Courier New", monospace;*/
+	color:black;
+	background-color: white;
+}
+#title > h3{
+	margin: 0;
+	margin-left: 1%;
+}
+
+#content {
+	display: flex;
+	flex-direction: row;
+	flex-wrap: wrap;
+}
+.wrapjxg {
+	margin-top: 1%;
+	margin-left: 1%;
+}
+
+
+@media screen and (max-width: 500px) {
+	.wrapjxg {
+		width: 90vw;
+        min-width: 100px;
+		max-width: 100vmin;
+        margin: 0 auto;
+            overflow:hidden;
+	}
+    #jxgbox {
+		
+		height: 0;
+        padding-bottom: 100%;
+		
+		
+	}
+	.setup {
+		max-width: 100vw;
+	}
+}
+
+@media screen and (min-width:500px) {
+	
+
+#jxgbox{
+margin:1%;
+
+border: 0px;
+width: 500px;
+height:500px;
+}}
+#overlay {
+	display: none;
+	position: fixed;
+	top:0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	z-index: 101;
+	background-color: rgba(0,0,0,0.5);
+}
+
+#overlaywindow {
+	max-width: 800px;
+	min-width: 300px;
+	min-height: 100px;
+	max-height: 80%;
+	z-index: 102;
+	background-color: white;
+	margin: 10% auto;
+	padding: 3px 15px;
+	display: flex;
+	flex-direction: column;
+
+}
+
+.closewindow {
+	float: right;
+	font-size: 24px;
+	font-weight: bold;
+	cursor: pointer;
+	margin-left: auto;
+}
+#title, .small {
+
+padding:1%;
+height: 5%;
+
+}
+#setup {
+	display: flex;
+	flex-direction: column;
+	margin: 1%;
+	flex-grow: 3;
+	max-width: 1000px;
+}
+
+
+.settingbox {
+	background-color: white;
+	border-radius: 5px;
+	margin: 1%;
+	padding: 3px;
+	
+}
+
+
+.settinglabel {
+	margin:1% 1% 1% 0%;
+	font-family: 'Source Sans Pro', sans-serif;
+	/*font-family: "Lucida Console", "Courier New", monospace;*/
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	background-color: white;
+	border-radius: 5px;
+	margin: 1%;
+	padding: 3px;
+	
+}
+.settinglabel:hover {
+	box-shadow: rgba(0, 0, 0, 0.1) 0px 1px 2px 0px;
+}
+
+details:hover > div{
+	box-shadow: rgba(0, 0, 0, 0.1) 0px 1px 2px 0px;
+}
+
+#reaction {
+	display: flex;
+	flex-direction: column;
+}
+.slider {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+}
+.wrapcomponent {
+	display: flex;
+	flex-direction: row;
+	padding: 3px;
+	border-radius: 3px;
+	margin:3px;
+}
+
+.dragcomponent {
+	min-width: 40px;
+	cursor:pointer;
+}
+
+.reactiondiv {
+	display: flex;
+	flex-direction: column;
+	
+	margin: 1%;
+	flex-wrap: wrap;
+	border-bottom: 2px dashed gray;
+}
+.reactiondiv:last-child {
+	border-bottom: transparent;
+}
+
+.reactionsettingsgroup {
+	display: flex;
+	flex-direction: row;
+	flex-wrap: wrap;
+	align-items: center;
+}
+.wrapcomponentgroup {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	flex-wrap: nowrap;
+	overflow: auto;
+	max-width: 90vw;
+}
+
+
+input.coefInput {
+	width: 45px;
+	
+}
+.trash {
+	margin-left: auto;
+}
+
+.create {
+	margin-left: auto;
+	margin-right: 1%;
+	height: 1.5rem;
+}
+.create>svg {
+transform: translate(0px, -0.2rem);
+
+}
+
+
+label.coefInput {
+	margin: 3px;
+}
+.innerComponentDiv {
+	display: flex;
+	flex-direction: column;
+	align-items: baseline;
+}
+#Components>div>p{
+	margin-bottom: 0.5em;
+	
+}
+#overlaycontent {
+	display: flex;
+	flex-direction: row;
+	flex-wrap: wrap;
+	padding-bottom: 10px;
+}
+
+.optionbox {
+	display: flex;
+	flex-direction: row;
+	flex-wrap: wrap;
+	width: 100%;
+}
+
+.dropzone {
+	min-width: 100px;
+	min-height: 2em;
+	border: 1px solid #426a6d;
+	border-radius: 10px;
+	display: flex;
+	flex-direction: row;
+	justify-content: center;
+}
+
+.componentbox {
+	min-width: 100px;
+	min-height: 2em;
+	border: 1px solid #426a6d;
+	border-radius: 10px;
+	display: flex;
+	flex-direction: row;
+	justify-content: center;
+}
+
+.wrapcreatereactionmenu {
+	width: 40%;
+	margin-right: 10px;
+}
+
+#reactionformstep1 {
+	height: 2rem;
+	align-self: flex-end;
+}
+summary {
+	list-style: none;
+}
+
+
+
