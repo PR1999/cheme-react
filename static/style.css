@@ -103,6 +103,7 @@ height: 5%;
 	flex-direction: column;
 	margin: 1%;
 	flex-grow: 3;
+	max-width: 1000px;
 }
 
 

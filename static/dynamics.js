@@ -273,6 +273,7 @@ function createandstorecomponent(componentname, initialcx0, color) {
     console.log(`created new component ${newcomponent.componentName}`);
     componentdiv(newcomponent);
     let math = document.createElement('p');
+    math.id = 'math_' + newcomponent.id
     mathstr = `\\frac{dC_{${componentname}}}{dt}=r_{${componentname.substr(0,4).toLowerCase()}}`;
     math.innerText = mathstr
     mathbox = document.querySelector('#math');
@@ -487,6 +488,7 @@ function deletecomponent(id) {
     Verwijder glider van board
     verwijder plot van board
     verwijder plot uit plotmap
+    TODO verwijder vergelijking uit math
 
     */
     let component = componentidmap.get(id);
@@ -519,6 +521,8 @@ function deletecomponent(id) {
 
     let div = document.getElementById(id);
     div.parentNode.removeChild(div);
+
+    document.getElementById('math_' + id).remove();
 }
 
 function testupdate() {
