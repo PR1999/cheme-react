@@ -37,6 +37,7 @@ class Component {
     this.id = getRandomInt(1,100000).toString().padStart(5,"0");
     this.cx = this.cx0.Y();
     this.cx0.on('out', function() {
+        //adds an event handeler to update the cx0 on the page when the glider is moved. 
         for(let i=0; i< componentArray.length; i++) {
             document.getElementById(componentArray[i].id + 'cx0').value = ~~(componentArray[i].getcx0() * 100) / 100
         }
@@ -222,7 +223,7 @@ function componentdiv(component) {
     showhide.checked = true;
     showhide.classList.add('button')
     
-    showhide.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-eye" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="#2c3e50" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><circle cx="12" cy="12" r="2" /><path d="M22 12c-2.667 4.667 -6 7 -10 7s-7.333 -2.333 -10 -7c2.667 -4.667 6 -7 10 -7s7.333 2.333 10 7" /></svg>';
+    showhide.innerHTML = '<svg xmlns="https://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-eye" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="#2c3e50" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><circle cx="12" cy="12" r="2" /><path d="M22 12c-2.667 4.667 -6 7 -10 7s-7.333 -2.333 -10 -7c2.667 -4.667 6 -7 10 -7s7.333 2.333 10 7" /></svg>';
     showhide.setAttribute('onclick', `showhideplot('${component.id}');`);
 
     let inputcx0 = document.createElement('input');
@@ -240,7 +241,7 @@ function componentdiv(component) {
     trash.classList.add('trash')
     trash.setAttribute('onclick', `deletecomponent('${component.id}')`);
     trash.innerHTML = `
-    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-trash" width="24" height="24" viewBox="0 0 24 24" stroke-width="1.5" stroke="#2c3e50" fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <svg xmlns="https://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-trash" width="24" height="24" viewBox="0 0 24 24" stroke-width="1.5" stroke="#2c3e50" fill="none" stroke-linecap="round" stroke-linejoin="round">
   <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
   <line x1="4" y1="7" x2="20" y2="7" />
   <line x1="10" y1="11" x2="10" y2="17" />
@@ -352,7 +353,7 @@ function newreactionDiv(reaction) {
 
     let arrow = document.createElement('div');
     arrow.classList.add('arrow');
-    arrow.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-arrow-narrow-right" width="48" height="48" viewBox="0 0 24 24" stroke-width="2" stroke="#000000" fill="none" stroke-linecap="round" stroke-linejoin="round" style="
+    arrow.innerHTML = `<svg xmlns="https://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-arrow-narrow-right" width="48" height="48" viewBox="0 0 24 24" stroke-width="2" stroke="#000000" fill="none" stroke-linecap="round" stroke-linejoin="round" style="
     stroke: hsl(0deg 0% 35%);
     ">
   <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
@@ -415,7 +416,7 @@ function newreactionDiv(reaction) {
     trash.classList.add('button')
     trash.classList.add('trash')
     trash.innerHTML = `
-    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-trash" width="24" height="24" viewBox="0 0 24 24" stroke-width="1.5" stroke="#2c3e50" fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <svg xmlns="https://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-trash" width="24" height="24" viewBox="0 0 24 24" stroke-width="1.5" stroke="#2c3e50" fill="none" stroke-linecap="round" stroke-linejoin="round">
   <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
   <line x1="4" y1="7" x2="20" y2="7" />
   <line x1="10" y1="11" x2="10" y2="17" />

@@ -221,6 +221,7 @@ label.coefInput {
 	display: flex;
 	flex-direction: row;
 	flex-wrap: wrap;
+	padding-bottom: 10px;
 }
 
 .optionbox {
@@ -248,9 +249,17 @@ label.coefInput {
 	display: flex;
 	flex-direction: row;
 	justify-content: center;
-	width: 40%;
 }
 
+.wrapcreatereactionmenu {
+	width: 40%;
+	margin-right: 10px;
+}
+
+#reactionformstep1 {
+	height: 2rem;
+	align-self: flex-end;
+}
 summary {
 	list-style: none;
 }

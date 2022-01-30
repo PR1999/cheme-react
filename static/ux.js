@@ -6,16 +6,17 @@ function showhideplot(id) {
     let label = document.getElementById(id + 'show')
     if (plot.getAttribute('visible')) {
         plot.hideElement();
-        label.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-eye-off" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="#2c3e50" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><line x1="3" y1="3" x2="21" y2="21" /><path d="M10.584 10.587a2 2 0 0 0 2.828 2.83" /><path d="M9.363 5.365a9.466 9.466 0 0 1 2.637 -.365c4 0 7.333 2.333 10 7c-.778 1.361 -1.612 2.524 -2.503 3.488m-2.14 1.861c-1.631 1.1 -3.415 1.651 -5.357 1.651c-4 0 -7.333 -2.333 -10 -7c1.369 -2.395 2.913 -4.175 4.632 -5.341" /></svg>'
+        label.innerHTML = '<svg xmlns="https://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-eye-off" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="#2c3e50" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><line x1="3" y1="3" x2="21" y2="21" /><path d="M10.584 10.587a2 2 0 0 0 2.828 2.83" /><path d="M9.363 5.365a9.466 9.466 0 0 1 2.637 -.365c4 0 7.333 2.333 10 7c-.778 1.361 -1.612 2.524 -2.503 3.488m-2.14 1.861c-1.631 1.1 -3.415 1.651 -5.357 1.651c-4 0 -7.333 -2.333 -10 -7c1.369 -2.395 2.913 -4.175 4.632 -5.341" /></svg>'
 
     }
     else {
     plot.showElement();
-    label.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-eye" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="#2c3e50" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><circle cx="12" cy="12" r="2" /><path d="M22 12c-2.667 4.667 -6 7 -10 7s-7.333 -2.333 -10 -7c2.667 -4.667 6 -7 10 -7s7.333 2.333 10 7" /></svg>';
+    label.innerHTML = '<svg xmlns="https://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-eye" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="#2c3e50" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><circle cx="12" cy="12" r="2" /><path d="M22 12c-2.667 4.667 -6 7 -10 7s-7.333 -2.333 -10 -7c2.667 -4.667 6 -7 10 -7s7.333 2.333 10 7" /></svg>';
     }
 }
 
 function userCreateReaction() {
+    //OLD
     let overlay = document.getElementById('overlay');
     overlay.style.display = 'block';
     let content = document.getElementById('overlaycontent');
@@ -27,7 +28,7 @@ function userCreateReaction() {
     components.addEventListener('drop', doDrop);
     components.addEventListener('dragover', doDragOver);
 
-    let dropicon = `<svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-drag-drop" width="36" height="36" viewBox="0 0 24 24" stroke-width="1.5" stroke="#9e9e9e" fill="none" stroke-linecap="round" stroke-linejoin="round">
+    let dropicon = `<svg xmlns="https://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-drag-drop" width="36" height="36" viewBox="0 0 24 24" stroke-width="1.5" stroke="#9e9e9e" fill="none" stroke-linecap="round" stroke-linejoin="round">
     <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
     <path d="M19 11v-2a2 2 0 0 0 -2 -2h-8a2 2 0 0 0 -2 2v8a2 2 0 0 0 2 2h2" />
     <path d="M13 13l9 3l-4 2l-2 4l-3 -9" />
@@ -124,6 +125,7 @@ function doDrop(event) {
 }
 
 function reactionValidStep1() {
+    //OLD
     let productbox = document.getElementById('productdropzone');
     let reactantbox = document.getElementById('reactantdropzone');
     let products = productbox.children;
@@ -159,6 +161,26 @@ function reactionstep2() {
     board.update();
     
     
+}
+
+function callcreatereaction(reactants, products) {
+    let reactioncomponents = [];
+    let reactioncoeffiencts =[];
+    for (let i = 0; i < reactants.length;i++) {
+        reactioncomponents.push(componentidmap.get(reactants[i]));
+        reactioncoeffiencts.push(-1);
+    }
+    for (let i = 0; i < products.length;i++) {
+        reactioncomponents.push(componentidmap.get(products[i]));
+        reactioncoeffiencts.push(1);
+    }
+
+    
+
+    createreaction(reactioncomponents, reactioncoeffiencts, 0.1);
+    closeoverlay();
+    board.update();
+
 }
 
 function doDragStart(event) {
@@ -246,12 +268,20 @@ function TouchUserCreateReaction() {
     let overlay = document.getElementById('overlay');
     overlay.style.display = 'block';
     let content = document.getElementById('overlaycontent');
+    let reactantswrap = document.createElement('div');
+    reactantswrap.innerHTML = "<p>Reactants</p>";
+    reactantswrap.classList.add('wrapcreatereactionmenu');
     let reactants = document.createElement('div');
     reactants.id = "reactanttbox";
     reactants.classList.add('componentbox');
+    let productswrap = document.createElement('div');
+    productswrap.innerHTML = "<p>Products</p>";
+    productswrap.classList.add('wrapcreatereactionmenu');
     let products = document.createElement('div');
     products.id = "productbox";
     products.classList.add('componentbox');
+    let selectedreactants = [];
+    let selectedproducts = [];
 
 
 
@@ -273,7 +303,52 @@ function TouchUserCreateReaction() {
         label.innerText = componentArray[i].componentName;
         component.appendChild(label);
         let component2 = component.cloneNode(true);
-        component2.firstChild.id = componentArray[i].id + '_checkbox2'
+        component2.firstChild.id = componentArray[i].id + '_checkbox2';
+        component.addEventListener('change', e => {
+            //product checkbox
+            baseid = e.target.id.slice(0, e.target.id.length - 1 );
+            componentidstr = baseid.slice(0,5);
+            otherid = baseid + '2';
+            if (e.target.checked) {
+                document.getElementById(otherid).disabled = 'true';
+                selectedproducts.push(componentidstr);
+            }
+            else {
+                document.getElementById(otherid).removeAttribute('disabled');
+                selectedproducts.splice(selectedproducts.indexOf(componentidstr),1);
+
+            }
+            if (selectedreactants.length > 0 && selectedproducts > 0) {
+                console.log('valid state');
+                document.getElementById('reactionformstep1').removeAttribute('disabled');
+
+            }
+            else {
+                document.getElementById('reactionformstep1').disabled = 'true';
+            }
+        })
+        component2.addEventListener('change', e => {
+            //reactant checkbox
+            baseid = e.target.id.slice(0, e.target.id.length - 1 );
+            componentidstr = baseid.slice(0,5);
+            otherid = baseid + '1'
+            if (e.target.checked) {
+                document.getElementById(otherid).disabled = 'true';
+                selectedreactants.push(componentidstr);
+            }
+            else {
+                document.getElementById(otherid).removeAttribute('disabled');
+                selectedreactants.splice(selectedreactants.indexOf(componentidstr),1);
+            }
+            if (selectedreactants.length > 0 && selectedproducts > 0) {
+                console.log('valid state');
+                document.getElementById('reactionformstep1').removeAttribute('disabled');
+
+            }
+            else {
+                document.getElementById('reactionformstep1').disabled = 'true';
+            }
+        })
         reactants.appendChild(component2);
         products.appendChild(component);
         
@@ -281,7 +356,18 @@ function TouchUserCreateReaction() {
 
     
 
-    content.appendChild(reactants);
-    content.appendChild(products);
+    content.appendChild(reactantswrap);
+    reactantswrap.appendChild(reactants)
+    content.appendChild(productswrap);
+    productswrap.appendChild(products)
+    let next = document.createElement('button');
+    next.innerText = 'Next'
+    next.classList.add('formbutton')
+    next.id = 'reactionformstep1'
+    next.disabled = true;
+    next.addEventListener('click', e => {
+        callcreatereaction(selectedreactants,selectedproducts);
+    })
+    content.appendChild(next)
 }
 
