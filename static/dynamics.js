@@ -205,6 +205,38 @@ return {
 };
 }
 
+function dynode2(components, interval, tolerance) {
+    
+    let cx0 = []
+    const dimension = components.length;
+    let cx = [];
+
+    for(let i = 0; i < dimension; i++) {
+        cx0.push(components[i].cx0.Y())
+    }
+
+    let data = runrkf45(righthandside,interval,cx0);
+    runcounter++;
+    let time = data.t_res;
+    let results = [];
+
+    for(let j = 0; j< dimension; j++) {
+        results.push([]);
+    }
+
+
+    for (let i = 0; i < time.length; i++) {
+        for(let j = 0; j< dimension; j++) {
+        results[j][i] = data.y_res[i][j];
+        }
+    }
+
+return {
+  time,
+  results
+};
+}
+
 function componentdiv(component) {
     let topdiv = document.getElementById('Components');
     let newdiv = document.createElement('div');
@@ -312,6 +344,27 @@ function addPlot(component) {
 
 }
 
+function addplot2(component) {
+    let j = component.componentlocation;
+    let tolerance = 0.02
+    let newname = component.componentname + 'NEW'
+    let resultdynode = dynode2(componentArray, interval, tolerance);
+    let plt = board.create('curve', [resultdynode.time, resultdynode.results[j]], { strokeColor: 'red', strokeWidth: 2, name: newname});
+    plt.updateDataArray = function() {
+        let j = component.componentlocation;
+        let data
+        if (calctracker === 0) {
+        currentresult = dynode2(componentArray, interval, tolerance);
+        }
+        data = currentresult;
+        calctracker++;
+        if (calctracker === componentArray.length) {
+            calctracker = 0;
+        }
+        this.dataX = data.time;
+        this.dataY = data.results[j];
+    }
+}
 function newreactionDiv(reaction) {
     
     let newdiv = document.createElement('div');
