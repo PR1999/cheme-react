@@ -301,7 +301,7 @@ function createandstorecomponent(componentname, initialcx0, color) {
     let newcomponent = new Component(componentname, initialcx0, color);
     componentArray.push(newcomponent);
     componentidmap.set(newcomponent.id, newcomponent);
-    addPlot(newcomponent);
+    addplot2(newcomponent);
     console.log(`created new component ${newcomponent.componentName}`);
     componentdiv(newcomponent);
     let math = document.createElement('p');
@@ -318,7 +318,7 @@ function createandstorecomponent(componentname, initialcx0, color) {
 let tf = 10
 let interval = [0,tf];
 let steps = 100;
-
+/*
 function addPlot(component) {
     let j = component.componentlocation;
     
@@ -344,12 +344,14 @@ function addPlot(component) {
 
 }
 
+*/
+
 function addplot2(component) {
     let j = component.componentlocation;
     let tolerance = 0.02
     let newname = component.componentname + 'NEW'
     let resultdynode = dynode2(componentArray, interval, tolerance);
-    let plt = board.create('curve', [resultdynode.time, resultdynode.results[j]], { strokeColor: 'red', strokeWidth: 2, name: newname});
+    let plt = board.create('curve', [resultdynode.time, resultdynode.results[j]], { strokeColor: component.color, strokeWidth: 2, name: component.componentname});
     plt.updateDataArray = function() {
         let j = component.componentlocation;
         let data
@@ -364,6 +366,8 @@ function addplot2(component) {
         this.dataX = data.time;
         this.dataY = data.results[j];
     }
+
+    plotmap.set(component, plt);
 }
 function newreactionDiv(reaction) {
     
