@@ -11,7 +11,7 @@ Try it [here](https://pr1999.github.io/cheme-react/ode.html)
 
 ## Goals
 - mobile interface ✅
-- robust solver
+- robust solver 🟠
 - users can change rate equation for each reaction 🟠
 
 ## Maybe Goals
