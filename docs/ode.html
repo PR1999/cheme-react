@@ -14,6 +14,7 @@
     <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/jsxgraph/distrib/jsxgraph.css">
     
     <script defer type="text/javascript" charset="UTF-8" src="ux.js"></script>
+    <script defer type="text/javascript" charset="UTF-8" src="solver.js"></script>
     <script defer type="text/javascript" charset="UTF-8" src="dynamics.js"></script>
     <script defer type="text/javascript" charset="UTF-8" src="batch.js"></script>
 
@@ -23,7 +24,7 @@
 <body>
 <header id="title" class="small">
     
-    <h3><a href="{{url_for('ode')}}">ChemE.io</a></h3>
+    <h3><a href=about.html>ChemE.io</a></h3>
     
 </header>
 
@@ -88,10 +89,17 @@
           </svg>Calculation Options</p></summary>
         <div id=textvalues class='settingbox' >
             
-            <label for='tf'>Time</label>
+            <label for='solver' id='solverlabel'>Solver</label>
+            <select id='solver' onchange="uxchangesolver(this.value)">
+                <option selected>rkf45</option>
+                <option>rk4</option>
+            </select>
+            <label for='tf' id='timelabel'>Time</label>
             <input id='tf' type="number" min=0 max=100 value="10" step=1 required onchange="tf = this.value; interval = [0,tf];board.update();">
-            <label for='points'>Data Points</label>
-            <input id='points' type="number" min=50 max=999 value="100" step=10 required onchange="steps = this.value;board.update();">
+            <label for='points' id='pointslabel' hidden>Data Points</label>
+            <input id='points' type="number" min=50 max=999 value="100" step=10 required onchange="steps = this.value;board.update();" hidden>
+            <p id='tolerance' class='infotext'>Tolerance:   0.015</p>
+            <p id='hinit' class='infotext'>Inital step size:    0.1</p>
             
         </div></details>
         <details open><summary>

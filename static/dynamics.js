@@ -172,7 +172,7 @@ function righthandside(t, cx) {
 
 }
 
-function dynode(components, interval, steps) {
+function dynodeRK4(components, interval, steps) {
     let stepsize = (interval[1]-interval[0]) / steps;
     let cx0 = []
     const dimension = components.length;
@@ -205,7 +205,7 @@ return {
 };
 }
 
-function dynode2(components, interval, tolerance) {
+function dynodeRKF45(components, interval, tolerance) {
     
     let cx0 = []
     const dimension = components.length;
@@ -301,7 +301,7 @@ function createandstorecomponent(componentname, initialcx0, color) {
     let newcomponent = new Component(componentname, initialcx0, color);
     componentArray.push(newcomponent);
     componentidmap.set(newcomponent.id, newcomponent);
-    addplot2(newcomponent);
+    addplotRKF45(newcomponent);
     console.log(`created new component ${newcomponent.componentName}`);
     componentdiv(newcomponent);
     let math = document.createElement('p');
@@ -319,19 +319,19 @@ let tf = 10
 let interval = [0,tf];
 let steps = 100;
 
-function addPlot(component) {
+function addplotRK4(component) {
     //rk45
     let j = component.componentlocation;
     
     
 
-    let resultdynode = dynode(componentArray, interval, steps);
+    let resultdynode = dynodeRK4(componentArray, interval, steps);
     let plt = board.create('curve', [resultdynode.time, resultdynode.results[j]], { strokeColor: component.color, strokeWidth: 2, name: component.componentName});
     plt.updateDataArray = function() {
         let j = component.componentlocation;
         let data
         if (calctracker === 0) {
-        currentresult = dynode(componentArray, interval, steps);
+        currentresult = dynodeRK4(componentArray, interval, steps);
         }
         data = currentresult;
         calctracker++;
@@ -345,18 +345,18 @@ function addPlot(component) {
 
 }
 
-function addplot2(component) {
+function addplotRKF45(component) {
     //rkf45
     let j = component.componentlocation;
     let tolerance = 0.02
     let newname = component.componentname + 'NEW'
-    let resultdynode = dynode2(componentArray, interval, tolerance);
+    let resultdynode = dynodeRKF45(componentArray, interval, tolerance);
     let plt = board.create('curve', [resultdynode.time, resultdynode.results[j]], { strokeColor: component.color, strokeWidth: 2, name: component.componentname});
     plt.updateDataArray = function() {
         let j = component.componentlocation;
         let data
         if (calctracker === 0) {
-        currentresult = dynode2(componentArray, interval, tolerance);
+        currentresult = dynodeRKF45(componentArray, interval, tolerance);
         }
         data = currentresult;
         calctracker++;
@@ -594,15 +594,15 @@ function changesolver(solver) {
         plotmap.delete(componentArray[i]);
         switch (solver) {
             case 'rkf45' :
-                addplot2(componentArray[i]);
+                addplotRKF45(componentArray[i]);
                 break;
             
             case 'rk4' :
-                addPlot(componentArray[i]);
+                addplotRK4(componentArray[i]);
                 break;
             
             default:
-                addPlot(componentArray[i])
+                addplotRK4(componentArray[i])
                 break;
         }
     }

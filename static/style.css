@@ -265,5 +265,9 @@ summary {
 	list-style: none;
 }
 
-
-
+.infotext {
+	display: inline-block;
+	margin-inline-start: 5px;
+	font-size: 0.8em;
+	font-style: italic;
+}
