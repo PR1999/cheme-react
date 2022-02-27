@@ -172,7 +172,7 @@ function righthandside(t, cx) {
 
 }
 
-function dynode(components, interval, steps) {
+function dynodeRK4(components, interval, steps) {
     let stepsize = (interval[1]-interval[0]) / steps;
     let cx0 = []
     const dimension = components.length;
@@ -196,6 +196,38 @@ function dynode(components, interval, steps) {
         time[i] = i * stepsize;
         for(let j = 0; j< dimension; j++) {
         results[j][i] = data[i][j];
+        }
+    }
+
+return {
+  time,
+  results
+};
+}
+
+function dynodeRKF45(components, interval, tolerance) {
+    
+    let cx0 = []
+    const dimension = components.length;
+    let cx = [];
+
+    for(let i = 0; i < dimension; i++) {
+        cx0.push(components[i].cx0.Y())
+    }
+
+    let data = runrkf45(righthandside,interval,cx0);
+    runcounter++;
+    let time = data.t_res;
+    let results = [];
+
+    for(let j = 0; j< dimension; j++) {
+        results.push([]);
+    }
+
+
+    for (let i = 0; i < time.length; i++) {
+        for(let j = 0; j< dimension; j++) {
+        results[j][i] = data.y_res[i][j];
         }
     }
 
@@ -269,7 +301,7 @@ function createandstorecomponent(componentname, initialcx0, color) {
     let newcomponent = new Component(componentname, initialcx0, color);
     componentArray.push(newcomponent);
     componentidmap.set(newcomponent.id, newcomponent);
-    addPlot(newcomponent);
+    addplotRKF45(newcomponent);
     console.log(`created new component ${newcomponent.componentName}`);
     componentdiv(newcomponent);
     let math = document.createElement('p');
@@ -287,18 +319,19 @@ let tf = 10
 let interval = [0,tf];
 let steps = 100;
 
-function addPlot(component) {
+function addplotRK4(component) {
+    //rk45
     let j = component.componentlocation;
     
     
 
-    let resultdynode = dynode(componentArray, interval, steps);
+    let resultdynode = dynodeRK4(componentArray, interval, steps);
     let plt = board.create('curve', [resultdynode.time, resultdynode.results[j]], { strokeColor: component.color, strokeWidth: 2, name: component.componentName});
     plt.updateDataArray = function() {
         let j = component.componentlocation;
         let data
         if (calctracker === 0) {
-        currentresult = dynode(componentArray, interval, steps);
+        currentresult = dynodeRK4(componentArray, interval, steps);
         }
         data = currentresult;
         calctracker++;
@@ -312,6 +345,30 @@ function addPlot(component) {
 
 }
 
+function addplotRKF45(component) {
+    //rkf45
+    let j = component.componentlocation;
+    let tolerance = 0.02
+    let newname = component.componentname + 'NEW'
+    let resultdynode = dynodeRKF45(componentArray, interval, tolerance);
+    let plt = board.create('curve', [resultdynode.time, resultdynode.results[j]], { strokeColor: component.color, strokeWidth: 2, name: component.componentname});
+    plt.updateDataArray = function() {
+        let j = component.componentlocation;
+        let data
+        if (calctracker === 0) {
+        currentresult = dynodeRKF45(componentArray, interval, tolerance);
+        }
+        data = currentresult;
+        calctracker++;
+        if (calctracker === componentArray.length) {
+            calctracker = 0;
+        }
+        this.dataX = data.time;
+        this.dataY = data.results[j];
+    }
+
+    plotmap.set(component, plt);
+}
 function newreactionDiv(reaction) {
     
     let newdiv = document.createElement('div');
@@ -526,5 +583,29 @@ function deletecomponent(id) {
 }
 
 function testupdate() {
+    board.update();
+}
+
+function changesolver(solver) {
+    board.suspendUpdate();
+    for(let i = 0; i < componentArray.length;i++) {
+        let oldplot = plotmap.get(componentArray[i]);
+        board.removeObject(oldplot.id);
+        plotmap.delete(componentArray[i]);
+        switch (solver) {
+            case 'rkf45' :
+                addplotRKF45(componentArray[i]);
+                break;
+            
+            case 'rk4' :
+                addplotRK4(componentArray[i]);
+                break;
+            
+            default:
+                addplotRK4(componentArray[i])
+                break;
+        }
+    }
+    board.unsuspendUpdate();
     board.update();
 }

@@ -371,3 +371,22 @@ function TouchUserCreateReaction() {
     content.appendChild(next)
 }
 
+function uxchangesolver(sel) {
+    console.log(sel);
+    changesolver(sel);
+    switch(sel) {
+        case 'rkf45' :
+            document.getElementById('points').hidden = 'true';
+            document.getElementById('pointslabel').hidden = 'true';
+            document.getElementById('tolerance').style.display = 'inline-block';
+            document.getElementById('hinit').style.display = 'inline-block';
+            
+            break;
+        case 'rk4' :
+            document.getElementById('points').removeAttribute('hidden');
+            document.getElementById('pointslabel').removeAttribute('hidden');
+            document.getElementById('tolerance').style.display = 'none';
+            document.getElementById('hinit').style.display = 'none';
+            break;
+    }
+}
