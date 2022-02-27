@@ -318,8 +318,9 @@ function createandstorecomponent(componentname, initialcx0, color) {
 let tf = 10
 let interval = [0,tf];
 let steps = 100;
-/*
+
 function addPlot(component) {
+    //rk45
     let j = component.componentlocation;
     
     
@@ -344,9 +345,8 @@ function addPlot(component) {
 
 }
 
-*/
-
 function addplot2(component) {
+    //rkf45
     let j = component.componentlocation;
     let tolerance = 0.02
     let newname = component.componentname + 'NEW'
@@ -583,5 +583,29 @@ function deletecomponent(id) {
 }
 
 function testupdate() {
+    board.update();
+}
+
+function changesolver(solver) {
+    board.suspendUpdate();
+    for(let i = 0; i < componentArray.length;i++) {
+        let oldplot = plotmap.get(componentArray[i]);
+        board.removeObject(oldplot.id);
+        plotmap.delete(componentArray[i]);
+        switch (solver) {
+            case 'rkf45' :
+                addplot2(componentArray[i]);
+                break;
+            
+            case 'rk4' :
+                addPlot(componentArray[i]);
+                break;
+            
+            default:
+                addPlot(componentArray[i])
+                break;
+        }
+    }
+    board.unsuspendUpdate();
     board.update();
 }
