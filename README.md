@@ -1,16 +1,22 @@
 # cheme-react
-A project to make a modern and accessible tool that helps people learn more about chemical reaction engineering. 
+Try it [here](https://pr1999.github.io/cheme-react/ode.html)
 
-# Minimum goals
-- cross platform or in browser
-- user added reactions
-- user added components
 
-# Goals
-- mobile interface
+# Roadmap
+## Minimum goals
+- simple solver ✅
+- run in modern desktop browsers ✅
+- users can add reactions ✅
+- users can add components ✅
+
+## Goals
+- mobile interface ✅
+- robust solver 🟠
+- users can change rate equation for each reaction 🟠
+
+## Maybe Goals
 - multiple reactor types
-- robust solver
-- user added equation & variables
+- user added equations & variables
 - save reactor state and allow import and export 
 
 # Background
