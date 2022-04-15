@@ -9,7 +9,7 @@
 - users can add reactions ✅
 - users can add components ✅
 
-## Goals
+## Current Goals
 - mobile interface ✅
 - better solver 🟡
   - add rkf45 or similar✅
@@ -18,7 +18,7 @@
 - users can change rate for each reaction ✅
 - multiple reactor types 🟠
 
-## Maybe Goals
+## Future Goals
 - user can add custom equations & variables
 - save reactor state and allow import and export 
 
