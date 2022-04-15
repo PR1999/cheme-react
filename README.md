@@ -1,5 +1,5 @@
-# cheme-react
-Try it [here](https://pr1999.github.io/cheme-react/ode.html)
+# What's this?
+🌐Try it [here](https://pr1999.github.io/cheme-react/ode.html)
 
 
 # Roadmap
@@ -11,13 +11,16 @@ Try it [here](https://pr1999.github.io/cheme-react/ode.html)
 
 ## Goals
 - mobile interface ✅
-- robust solver 🟠
-- users can change rate equation for each reaction 🟠
+- better solver 🟡
+  - add rkf45 or similar✅
+  - user can change parameters for rfk45 solver
+  - reset/warn in case of bad solutions
+- users can change rate for each reaction ✅
+- multiple reactor types 🟠
 
 ## Maybe Goals
-- multiple reactor types
-- user added equations & variables
+- user can add custom equations & variables
 - save reactor state and allow import and export 
 
-# Background
-Teaching myself JS and webdev stuff while making this and making every beginner mistake possible 🐤
+# About
+Have an issue, question, or idea? Feel free to send me a message ✉
