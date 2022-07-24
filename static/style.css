@@ -115,6 +115,13 @@ height: 5%;
 	
 }
 
+.plotbox {
+	background-color: white;
+	border-radius: 5px;
+	margin: 1%;
+	padding: 3px;
+}
+
 
 .settinglabel {
 	margin:1% 1% 1% 0%;

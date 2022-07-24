@@ -1,6 +1,8 @@
-// First create the board and arrays to store the reactions and components in
-//todo : maybe replace with weakmap / map oid, not sure - dont think I will 
-//todo : ids might break @ coeffient input if something is a product and reactant on the same reaction;. oh well \
+
+//todo : ids might break @ coeffient input if something is a product and reactant on the same reaction;
+//I know the names make no sense and are misleading. I blame a total lack of planning. 
+//this file contains most of the code for the calculations.
+//batch.js sets up some content after loading, ux.js is mostly UX related, mostly forms etc. solver.js is the rkf45 solver
 
 const board = JXG.JSXGraph.initBoard('jxgbox', {
     boundingbox: [-0.5, 11, 11, -0.5],
@@ -15,6 +17,48 @@ function getRandomInt(min, max) {
   return Math.floor(Math.random() * (max - min) + min); //The maximum is exclusive and the minimum is inclusive
 }
 
+let uplotopts = {
+    title: "Volume",
+    id: "volplot",
+    class: "extraplot",
+    width: 500,
+    height: 300,
+    scales: {
+        x: {time: false}
+    },
+    series: [
+        {
+            label: "time"
+        },
+        {
+            label: "Volume",
+            stroke: "red"
+        }
+    ]
+}
+
+let uplotopts2 = {
+    title: "Concentration",
+    id: "coutplot",
+    class: "extraplot",
+    width: 500,
+    height: 300,
+    scales: {
+        x: {time: false}
+    },
+    series: [
+        {
+            label: "time"
+        }
+    ]
+}
+
+var uplotdata = [[],[]];
+var uplotdata2 = [[]]
+let plotelement = document.getElementById("vplot");
+let vplot = new uPlot(uplotopts,uplotdata, plotelement)
+let plotelement2 = document.getElementById("coutplot");
+let cplot = new uPlot(uplotopts2,uplotdata2, plotelement2)
 
 var componentArray = [];
 var componentidmap = new Map();
@@ -24,25 +68,43 @@ let plotmap = new WeakMap()
 var calctracker = 0;
 let currentresult
 
+var reactor = {
+    reactortype: 'cstr1',
+    initialvolume: 2,
+    vin: 1,
+    vout: 1,
+    dvdt: function(t, V) {
+        let deltav = reactor.vin - reactor.vout
+        let resultdelta = []
+        resultdelta.push(deltav)
+        return deltav
+    }
+
+
+}
+
+
 // Component class is used to create components that can be used to set up reactions give it a name like 'A', a cx0 for where you want the point to start on the Y axis, and a color :)
 class Component {
-  constructor(componentName, initialcx0, color) {
+  constructor(componentName, initialval, color) {
     this.componentlocation = componentArray.length;
     this.componentName = componentName;
     this.color = color;
-    this.cx0 = board.create('glider', [0,initialcx0,board.defaultAxes.y], {name:componentName, color:this.color});
+    this.Nx0 = board.create('glider', [0,initialval,board.defaultAxes.y], {name:componentName, color:this.color});
     
     this.rx = [];
     this.rxreactionids = [];
     this.id = getRandomInt(1,100000).toString().padStart(5,"0");
-    this.cx = this.cx0.Y();
-    this.cx0.on('out', function() {
+    this.Nx = this.Nx0.Y();
+    this.cx = this.Nx/reactor.volume;
+    this.Nx0.on('out', function() {
         //adds an event handeler to update the cx0 on the page when the glider is moved. 
         for(let i=0; i< componentArray.length; i++) {
             document.getElementById(componentArray[i].id + 'cx0').value = ~~(componentArray[i].getcx0() * 100) / 100
         }
         return 0
     })
+    this.cin = 0;
   }
 
   rxsum() {
@@ -55,11 +117,20 @@ class Component {
   }
 
   getcx0() {
-      return this.cx0.Y()
+      return this.Nx0.Y()
+  }
+
+  getcin() {
+      return this.cin;
+  }
+
+  setcin(value) {
+      this.cin = Number(value);
+      board.update();
   }
 
   setcx0(y) {
-      this.cx0.setPosition(JXG.COORDS_BY_USER, [0,y])
+      this.Nx0.setPosition(JXG.COORDS_BY_USER, [0,y])
       board.update();
   }
 
@@ -172,17 +243,76 @@ function righthandside(t, cx) {
 
 }
 
-function dynodeRK4(components, interval, steps) {
-    let stepsize = (interval[1]-interval[0]) / steps;
-    let cx0 = []
+function rsidewithvol(t, xval) {
+    //dNxdt = Fxin -Fxout  + ra*V
+    //Fin and out are 0 for now //todo
+    let results = [];
+    let volume = [xval[0]];
+    reactor.volume = xval[0];
+    results.push(reactor.dvdt(t, volume));
+
+    const dimensioncomponents = componentArray.length;
+    const dimensioncx = xval.length - 1;
+    if(dimensioncomponents !== dimensioncx) {
+        console.log("dimensions in function right dont match")
+    }
+
+    for(let i = 1; i < dimensioncx + 1; i++) {
+        componentArray[i - 1].Nx = xval[i]
+        componentArray[i - 1].cx = componentArray[i -1].Nx/reactor.volume
+        Fin = componentArray[i - 1].cin * reactor.vin;
+        Fout = componentArray[i -1].cx * reactor.vout;
+        results.push((Fin - Fout) + componentArray[i - 1].rxsum()*reactor.volume)
+        
+    }
+    return(results)
+
+}
+
+function dynodeRKF45(components, interval, tolerance) {
+    
+    let initialvalues = [];
+    initialvalues.push(reactor.initialvolume);
     const dimension = components.length;
     let cx = [];
 
     for(let i = 0; i < dimension; i++) {
-        cx0.push(components[i].cx0.Y())
+        initialvalues.push(components[i].Nx0.Y())
     }
 
-    let data = JXG.Math.Numerics.rungeKutta('rk4', cx0, interval, steps, righthandside);
+    let data = runrkf45(rsidewithvol,interval,initialvalues);
+    runcounter++;
+    let time = data.t_res;
+    let results = [];
+
+    for(let j = 0; j< dimension + 1; j++) {
+        results.push([]);
+    }
+
+
+    for (let i = 0; i < time.length; i++) {
+        for(let j = 0; j< dimension + 1; j++) {
+        results[j][i] = data.y_res[i][j];
+        }
+    }
+
+return {
+  time,
+  results
+};
+}
+
+function dynodeRK4(components, interval, steps) {
+    let stepsize = (interval[1]-interval[0]) / steps;
+    let initialvalues = []
+    const dimension = components.length;
+    let cx = [];
+
+    for(let i = 0; i < dimension; i++) {
+        initialvalues.push(components[i].Nx0.Y())
+    }
+
+    let data = JXG.Math.Numerics.rungeKutta('rk4', initialvalues, interval, steps, righthandside);
     runcounter++;
     let time = [];
     let results = [];
@@ -204,18 +334,18 @@ return {
   results
 };
 }
-
+/*
 function dynodeRKF45(components, interval, tolerance) {
     
-    let cx0 = []
+    let initialvalues = []
     const dimension = components.length;
     let cx = [];
 
     for(let i = 0; i < dimension; i++) {
-        cx0.push(components[i].cx0.Y())
+        initialvalues.push(components[i].Nx0.Y())
     }
 
-    let data = runrkf45(righthandside,interval,cx0);
+    let data = runrkf45(righthandside,interval,initialvalues);
     runcounter++;
     let time = data.t_res;
     let results = [];
@@ -236,7 +366,7 @@ return {
   results
 };
 }
-
+*/
 function componentdiv(component) {
     let topdiv = document.getElementById('Components');
     let newdiv = document.createElement('div');
@@ -266,7 +396,17 @@ function componentdiv(component) {
     inputcx0.value = component.getcx0();
     inputcx0.setAttribute('oninput', `componentidmap.get('${component.id}').setcx0(this.value)`);
     let labelcx0 = document.createElement('label');
-    labelcx0.innerText = 'Cx0';
+    labelcx0.innerText = 'Nx0';
+
+    let inputcin = document.createElement('input');
+    inputcin.id = component.id+'cin';
+    inputcin.type = 'Number';
+    inputcin.classList.add('numberinput');
+    inputcin.classList.add('cx0input');
+    inputcin.value = component.getcin();
+    inputcin.setAttribute('oninput', `componentidmap.get('${component.id}').setcin(this.value)`);
+    let labelcin = document.createElement('label');
+    labelcin.innerText = 'C in';
 
     let trash = document.createElement('button');
     trash.classList.add('button')
@@ -287,6 +427,8 @@ function componentdiv(component) {
     innerdiv.appendChild(showhide);
     innerdiv.appendChild(labelcx0);
     labelcx0.appendChild(inputcx0);
+    innerdiv.appendChild(labelcin);
+    labelcin.appendChild(inputcin);
     innerdiv.appendChild(trash);
     newdiv.appendChild(innerdiv);
     topdiv.appendChild(newdiv);
@@ -306,11 +448,13 @@ function createandstorecomponent(componentname, initialcx0, color) {
     componentdiv(newcomponent);
     let math = document.createElement('p');
     math.id = 'math_' + newcomponent.id
-    mathstr = `\\frac{dC_{${componentname}}}{dt}=r_{${componentname.substr(0,4).toLowerCase()}}`;
+    mathstr = `\\frac{dN_{${componentname}}}{dt}=r_{${componentname.substr(0,4).toLowerCase()}}V + F_{${componentname.substr(0,4).toLowerCase()}\\,in} - F_{${componentname.substr(0,4).toLowerCase()}\\,uit}`;
     math.innerText = mathstr
     mathbox = document.querySelector('#math');
     mathbox.appendChild(math);
     katex.render(mathstr, math);
+    
+    addseriesuplot(newcomponent,cplot)
     return newcomponent
 
 }
@@ -345,13 +489,54 @@ function addplotRK4(component) {
 
 }
 
+function calcconcentration(data) {
+    let arr1 = data.results[0]
+    let concentration = [];
+    concentration.push(data.time)
+    for (let i = 1; i <data.results.length; i++){
+        concentration.push(data.results[i].map((e,index) => e / arr1[index]))
+
+    }
+
+    return concentration
+}
+
+function seriesarr(componentArray, plot) {
+    let seriesarr = [];
+    seriesarr.push({
+        label: 'time'
+    })
+    for(let i = 0; i < componentArray.length; i++) {
+        let series = {
+            label: null,
+            stroke: null
+        }
+        let sidx = componentArray[i].componentlocation;
+        series.label = componentArray[i].componentName;
+        series.stroke = componentArray[i].color;
+        seriesarr.push(series);
+    }
+    return seriesarr
+}
+
+function addseriesuplot(component, plot) {
+    let series = {
+        label: null,
+        stroke: null
+    }
+    let sidx = component.componentlocation + 1;
+    series.label = component.componentName;
+    series.stroke = component.color;
+    plot.addSeries(series, sidx)
+}
+
 function addplotRKF45(component) {
     //rkf45
     let j = component.componentlocation;
     let tolerance = 0.02
     let newname = component.componentname + 'NEW'
     let resultdynode = dynodeRKF45(componentArray, interval, tolerance);
-    let plt = board.create('curve', [resultdynode.time, resultdynode.results[j]], { strokeColor: component.color, strokeWidth: 2, name: component.componentname});
+    let plt = board.create('curve', [resultdynode.time, resultdynode.results[j + 1]], { strokeColor: component.color, strokeWidth: 2, name: component.componentname});
     plt.updateDataArray = function() {
         let j = component.componentlocation;
         let data
@@ -362,9 +547,18 @@ function addplotRKF45(component) {
         calctracker++;
         if (calctracker === componentArray.length) {
             calctracker = 0;
+            vplot.setData([data.time,data.results[0]])
+            let concentrationdata = calcconcentration(data)
+            //seriesarr(componentArray, cplot)
+            cplot.setData(concentrationdata)
         }
         this.dataX = data.time;
-        this.dataY = data.results[j];
+        this.dataY = data.results[j + 1];
+        
+
+        
+
+        
     }
 
     plotmap.set(component, plt);
@@ -546,6 +740,7 @@ function deletecomponent(id) {
     verwijder plot van board
     verwijder plot uit plotmap
     verwijder vergelijking uit math
+    verwijder series uit uplot
 
     */
     let component = componentidmap.get(id);
@@ -567,8 +762,8 @@ function deletecomponent(id) {
         componentArray[i].componentlocation = i;
     }
      
-    
-    board.removeObject(component.cx0);
+    cplot.delSeries(location + 1)
+    board.removeObject(component.Nx0);
     let plot = plotmap.get(component)
     plotmap.delete(component)
     board.removeObject(plot);
