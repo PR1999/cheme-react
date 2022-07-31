@@ -449,3 +449,13 @@ function sethmin(val) {
     }
 
 }
+
+function example1() {
+    settf(10)
+    document.getElementById('tf').value = 10
+    updatejcfvout("0", true, reactor.voljcvarstr)
+    document.getElementById('vout').value = "0"
+    let jcfvin = "(t > 2) && (t < 5) ? 0.2 : 0"
+    updatejcfvin(jcfvin, true, reactor.voljcvarstr)
+    document.getElementById('vin').value = jcfvin
+}

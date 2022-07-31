@@ -312,3 +312,12 @@ summary {
 	font-size: 0.8em;
 	font-style: italic;
 }
+
+.question {
+	font-weight: bold;
+	max-width: 400px;
+}
+
+.answer {
+	max-width: 400px;
+}

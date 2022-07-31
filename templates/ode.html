@@ -174,6 +174,68 @@
         <div id=math class='settingbox'>
             
         </div></details>
+        <details><summary>
+            <p class="settinglabel">
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-bulb" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="#000000" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                    <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                    <path d="M3 12h1m8 -9v1m8 8h1m-15.4 -6.4l.7 .7m12.1 -.7l-.7 .7" />
+                    <path d="M9 16a5 5 0 1 1 6 0a3.5 3.5 0 0 0 -1 3a2 2 0 0 1 -4 0a3.5 3.5 0 0 0 -1 -3" />
+                    <line x1="9.7" y1="17" x2="14.3" y2="17" />
+                  </svg>
+                Examples
+            </p>
+        </summary>
+        <div class="settingbox">
+            <button id="example1", class="button" onclick="example1()">
+                step change V in
+            </button>
+        </div>
+        </Details>
+        <details><summary>
+            <p class="settinglabel">
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-question-mark" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="#000000" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                    <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                    <path d="M8 8a3.5 3 0 0 1 3.5 -3h1a3.5 3 0 0 1 3.5 3a3 3 0 0 1 -2 3a3 4 0 0 0 -2 4" />
+                    <line x1="12" y1="19" x2="12" y2="19.01" />
+                </svg>
+                Help
+            </p>
+        </summary><div class = "settingbox">
+        
+        
+            <p class="question">
+                What is the syntax for the functions?
+            </p>
+            <p class="answer">
+                For V in, V out, and the reaction rate, you can write functions using the JessieCode syntax.
+                For more information on JessieCode, visit <a href= "https://jsxgraph.uni-bayreuth.de/wp/docs_jessiecode/">this page</a>
+            </p>
+            <p class="question">
+                Error: calculation took too long
+            </p>
+            <p class="answer">
+                - Try setting the tolerance to a higher value. <br>
+                - Try setting the minimum step size to a lower value.<br>
+                - Try changing to RK4 solver with a large number of points. <br>
+                - Very fast changes in a value are often the cause.
+            </p>
+            <p class="question">
+                My result looks strange?
+            </p>
+            <p class="answer">
+                - Make sure the volume is always above 0 <br>
+                - Make sure V in and V out are always positive <br>
+                - When using the RK4 solver, make sure you are using enough data points
+            </p>
+            <p class="question">
+                More information?
+            </p>
+            <p class="answer">
+                View this project on <a href="https://github.com/PR1999/cheme-react">GitHub</a> for more information!
+            </p>
+        
+        </Details>
+    </div>
         
     </div>
     </div>
