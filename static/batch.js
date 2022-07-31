@@ -8,6 +8,5 @@ let E = createandstorecomponent("E", 0, '#e67e22');
 const R1 = createreaction([A, B,C,D],[-1,-1,1,1], 0.1); //A + B > C+ D
 const R2 = createreaction([D,B,E],[-1,-1,2],0.05); //D +B >E
 let R3 = createreaction([E,C,A],[-1,-1,2],0.1); 
+
 board.unsuspendUpdate();
-
-

@@ -12,13 +12,13 @@
     <script defer src="https://cdn.jsdelivr.net/npm/katex@0.13.13/dist/katex.min.js" integrity="sha384-pK1WpvzWVBQiP0/GjnvRxV4mOb0oxFuyRxJlk6vVw146n3egcN5C925NCP7a7BY8" crossorigin="anonymous"></script>
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/jsxgraph/distrib/jsxgraphsrc.js"></script>
     <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/jsxgraph/distrib/jsxgraph.css">
+    <link rel="stylesheet" href="https://leeoniya.github.io/uPlot/dist/uPlot.min.css">
+    <script src="https://leeoniya.github.io/uPlot/dist/uPlot.iife.js"></script>
     
     <script defer type="text/javascript" charset="UTF-8" src={{ url_for('static', filename='ux.js') }}></script>
     <script defer type="text/javascript" charset="UTF-8" src={{ url_for('static', filename='solver.js') }}></script>
     <script defer type="text/javascript" charset="UTF-8" src={{ url_for('static', filename='dynamics.js') }}></script>
-    
     <script defer type="text/javascript" charset="UTF-8" src={{ url_for('static', filename='batch.js') }}></script>
-
     
     
 </head>
@@ -32,8 +32,50 @@
     <div id='content'>
     <div class='wrapjxg'>
         <div id="jxgbox" class="jxgbox"></div>
+        <details><summary>
+            <p class="plotlabel">
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-chart-line" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="#000000" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                    <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                    <line x1="4" y1="19" x2="20" y2="19" />
+                    <polyline points="4 15 8 9 12 11 16 6 20 10" />
+                  </svg>
+                Concentration</p>
+        </summary>
+            <div id="coutplot" class="plotbox"></div>
+        </details>
+        <details><summary>
+            <p class="plotlabel">
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-chart-line" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="#000000" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                    <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                    <line x1="4" y1="19" x2="20" y2="19" />
+                    <polyline points="4 15 8 9 12 11 16 6 20 10" />
+                  </svg>
+                Volume</p>
+        </summary>
+        <div id="vplot" class="plotbox"></div>
+        </details>
+        
     </div>
     <div id="setup">
+        <details open><summary>
+            <p class='settinglabel'>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-box" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="#000000" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                    <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                    <polyline points="12 3 20 7.5 20 16.5 12 21 4 16.5 4 7.5 12 3" />
+                    <line x1="12" y1="12" x2="20" y2="7.5" />
+                    <line x1="12" y1="12" x2="12" y2="21" />
+                    <line x1="12" y1="12" x2="4" y2="7.5" />
+                  </svg>
+                Reactor
+            </p></summary>
+            <div id=reactor class='settingbox'>
+                <label for='initialvolume' id='vinilabel'>Initial Volume</label>
+                <input id='initialvolume' type="number" min=1 max=100 value="1" step=1 required onchange="reactor.initialvolume = Number(this.value);board.update();">
+                <label for='vin' id='vinlabel'>V in(t, V)=</label>
+                <input id='vin' type="text" value="0" onchange="updatejcfvin(this.value)">
+                <label for='vout' id='voutlabel'>V out(t, V)=</label>
+                <input id='vout' type="text" value="0" onchange="updatejcfvout(this.value)">
+            </div></details>
         <details open><summary>
         <p class="settinglabel">
             <svg xmlns="https://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-exchange" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="#2c3e50" fill="none" stroke-linecap="round" stroke-linejoin="round">
@@ -96,11 +138,28 @@
                 <option>rk4</option>
             </select>
             <label for='tf' id='timelabel'>Time</label>
-            <input id='tf' type="number" min=0 max=100 value="10" step=1 required onchange="tf = this.value; interval = [0,tf];board.update();">
+            <input id='tf' type="number" min=0 max=100 value="10" step=1 required onchange="settf(this.value)">
             <label for='points' id='pointslabel' hidden>Data Points</label>
             <input id='points' type="number" min=50 max=999 value="100" step=10 required onchange="steps = this.value;board.update();" hidden>
-            <p id='tolerance' class='infotext'>Tolerance:   0.015</p>
-            <p id='hinit' class='infotext'>Inital step size:    0.1</p>
+            <button id= "resetbutton" class="button" onclick="resetboard()">
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-refresh-alert" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="#000000" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                    <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                    <path d="M20 11a8.1 8.1 0 0 0 -15.5 -2m-.5 -4v4h4" />
+                    <path d="M4 13a8.1 8.1 0 0 0 15.5 2m.5 4v-4h-4" />
+                    <line x1="12" y1="9" x2="12" y2="12" />
+                    <line x1="12" y1="15" x2="12.01" y2="15" />
+                </svg>
+            </button>
+            <div id="advrkf45">
+                <label for='tolerance' id='tolerancelabel'>tolerance
+                <input id='tolerance' type="number" min=0 max=100 value="0.015" step=0.005 required onchange="settolerance(this.value)"></label>
+                <label for='hinit' id='hinitlabel'>initial step size
+                <input id='hinit' type="number" min=0 max=100 value="0.1" step=0.05 required onchange="sethinit(this.value)"></label>
+                <label for='hmin' id='hminlabel'>min. step size
+                <input id='hmin' type="number" min=0 max=100 value="0.0001" step=0.00005 required onchange="sethmin(this.value)"></label>
+                <label for='hmax' id='hmaxlabel'>max. step size
+                <input id='hmax' type="number" min=0 max=100 value="0.5" step=0.1 required onchange="sethmax(this.value)"></label>
+            </div>
             
         </div></details>
         <details open><summary>
@@ -115,6 +174,69 @@
         <div id=math class='settingbox'>
             
         </div></details>
+        <details><summary>
+            <p class="settinglabel">
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-bulb" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="#000000" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                    <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                    <path d="M3 12h1m8 -9v1m8 8h1m-15.4 -6.4l.7 .7m12.1 -.7l-.7 .7" />
+                    <path d="M9 16a5 5 0 1 1 6 0a3.5 3.5 0 0 0 -1 3a2 2 0 0 1 -4 0a3.5 3.5 0 0 0 -1 -3" />
+                    <line x1="9.7" y1="17" x2="14.3" y2="17" />
+                  </svg>
+                Examples
+            </p>
+        </summary>
+        <div class="settingbox">
+            <button id="example1", class="button" onclick="example1()">
+                step change V in
+            </button>
+        </div>
+        </Details>
+        <details><summary>
+            <p class="settinglabel">
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-question-mark" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="#000000" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                    <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                    <path d="M8 8a3.5 3 0 0 1 3.5 -3h1a3.5 3 0 0 1 3.5 3a3 3 0 0 1 -2 3a3 4 0 0 0 -2 4" />
+                    <line x1="12" y1="19" x2="12" y2="19.01" />
+                </svg>
+                Help
+            </p>
+        </summary><div class = "settingbox">
+        
+        
+            <p class="question">
+                What is the syntax for the functions?
+            </p>
+            <p class="answer">
+                For V in, V out, and the reaction rate, you can write functions using the JessieCode syntax.
+                For more information on JessieCode, visit <a href= "https://jsxgraph.uni-bayreuth.de/wp/docs_jessiecode/">this page</a>
+            </p>
+            <p class="question">
+                Error: calculation took too long
+            </p>
+            <p class="answer">
+                - Try setting the tolerance to a higher value. <br>
+                - Try setting the minimum step size to a lower value.<br>
+                - Try changing to RK4 solver with a large number of points. <br>
+                - Very fast changes in a value are often the cause.
+            </p>
+            <p class="question">
+                My result looks strange?
+            </p>
+            <p class="answer">
+                - Make sure the volume is always above 0 <br>
+                - Make sure V in and V out are always positive <br>
+                - When using the RK4 solver, make sure you are using enough data points
+            </p>
+            <p class="question">
+                More information?
+            </p>
+            <p class="answer">
+                View this project on <a href="https://github.com/PR1999/cheme-react">GitHub</a> for more information!
+            </p>
+        
+        </Details>
+    </div>
+        
     </div>
     </div>
     <div id="overlay">

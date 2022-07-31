@@ -38,6 +38,13 @@ body {
         margin: 0 auto;
             overflow:hidden;
 	}
+	.plotlabel {
+		width: 90vw;
+		min-width: 100px;
+		max-width: 100vmin;
+        margin: 0 auto;
+        overflow:hidden;
+	}
     #jxgbox {
 		
 		height: 0;
@@ -59,7 +66,12 @@ margin:1%;
 border: 0px;
 width: 500px;
 height:500px;
-}}
+}
+.plotlabel {
+	width: 500px;
+}
+
+}
 #overlay {
 	display: none;
 	position: fixed;
@@ -113,6 +125,27 @@ height: 5%;
 	margin: 1%;
 	padding: 3px;
 	
+}
+
+.plotbox {
+	background-color: white;
+	border-radius: 5px;
+	margin: 1%;
+	padding: 3px;
+	height: 375px;
+}
+
+.plotlabel {
+	margin:1% 1% 1% 0%;
+	font-family: 'Source Sans Pro', sans-serif;
+	/*font-family: "Lucida Console", "Courier New", monospace;*/
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	background-color: white;
+	border-radius: 5px;
+	margin: 1%;
+	padding: 3px;
 }
 
 
@@ -250,6 +283,7 @@ label.coefInput {
 	display: flex;
 	flex-direction: row;
 	justify-content: center;
+	flex-wrap: wrap;
 }
 
 .wrapcreatereactionmenu {
@@ -270,4 +304,26 @@ summary {
 	margin-inline-start: 5px;
 	font-size: 0.8em;
 	font-style: italic;
+}
+
+#advrkf45 {
+	display: flex;
+	flex-direction: column;
+	font-size: 0.8em;
+	font-style: italic;
+}
+
+.question {
+	font-weight: bold;
+	max-width: 400px;
+}
+
+.answer {
+	max-width: 400px;
+}
+
+.about {
+	max-width: 90vw;
+	width: 500px;
+	
 }
