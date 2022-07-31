@@ -7,7 +7,26 @@
 const board = JXG.JSXGraph.initBoard('jxgbox', {
     boundingbox: [-0.5, 11, 11, -0.5],
     axis: true,
-    showCopyright: false
+    showCopyright: false,
+    defaultAxes: {
+    	x : {
+        name: 't',
+      	withLabel: true,
+        label: {
+            position: "rt",
+            offset: [-10, 10]
+        }
+        
+      },
+    	y : {
+      	withLabel:true,
+        name: 'N',
+        label: {
+            position: "rt",
+            offset: [10, 0]
+        }
+      }
+    }
   });
 
 var runcounter = 0;
@@ -18,7 +37,6 @@ function getRandomInt(min, max) {
 }
 
 let uplotopts = {
-    title: "Volume",
     id: "volplot",
     class: "extraplot",
     width: 500,
@@ -38,7 +56,6 @@ let uplotopts = {
 }
 
 let uplotopts2 = {
-    title: "Concentration",
     id: "coutplot",
     class: "extraplot",
     width: 500,
@@ -70,19 +87,32 @@ let currentresult
 
 var reactor = {
     reactortype: 'cstr1',
-    initialvolume: 2,
-    vin: 1,
-    vout: 1,
+    initialvolume: 1,
+    vin: 0,
+    vout: 0,
+    voljcvarstr: "t,V",
+    fvin: board.jc.snippet("0",true,"t, V"),
+    fvout: board.jc.snippet("0",true,"t, V"),
     dvdt: function(t, V) {
-        let deltav = reactor.vin - reactor.vout
+        let deltav = reactor.fvin(t, V[0]) - reactor.fvout(t,V[0])
         let resultdelta = []
         resultdelta.push(deltav)
         return deltav
     }
+    
 
 
 }
 
+function updatejcfvin(str) {
+    reactor.fvin = board.jc.snippet(str, true, "t, V");
+    board.update();
+}
+
+function updatejcfvout(str) {
+    reactor.fvout = board.jc.snippet(str, true, "t, V");
+    board.update();
+}
 
 // Component class is used to create components that can be used to set up reactions give it a name like 'A', a cx0 for where you want the point to start on the Y axis, and a color :)
 class Component {
@@ -249,6 +279,8 @@ function rsidewithvol(t, xval) {
     let results = [];
     let volume = [xval[0]];
     reactor.volume = xval[0];
+    reactor.vin = reactor.fvin(t,volume[0])
+    reactor.vout = reactor.fvout(t, volume[0])
     results.push(reactor.dvdt(t, volume));
 
     const dimensioncomponents = componentArray.length;
@@ -305,6 +337,7 @@ return {
 function dynodeRK4(components, interval, steps) {
     let stepsize = (interval[1]-interval[0]) / steps;
     let initialvalues = []
+    initialvalues.push(reactor.initialvolume);
     const dimension = components.length;
     let cx = [];
 
@@ -312,19 +345,19 @@ function dynodeRK4(components, interval, steps) {
         initialvalues.push(components[i].Nx0.Y())
     }
 
-    let data = JXG.Math.Numerics.rungeKutta('rk4', initialvalues, interval, steps, righthandside);
+    let data = JXG.Math.Numerics.rungeKutta('rk4', initialvalues, interval, steps, rsidewithvol);
     runcounter++;
     let time = [];
     let results = [];
 
-    for(let j = 0; j< dimension; j++) {
+    for(let j = 0; j< dimension + 1; j++) {
         results.push([]);
     }
 
 
     for (let i = 0; i < data.length; i++) {
         time[i] = i * stepsize;
-        for(let j = 0; j< dimension; j++) {
+        for(let j = 0; j< dimension + 1; j++) {
         results[j][i] = data[i][j];
         }
     }
@@ -461,6 +494,14 @@ function createandstorecomponent(componentname, initialcx0, color) {
 
 let tf = 10
 let interval = [0,tf];
+
+function settf(value) {
+    let newtf = Number(value);
+    tf = newtf;
+    interval = [0,tf];
+    board.setBoundingBox([-1*(tf/20), 11, tf + 1, -0.5])
+    board.update();
+}
 let steps = 100;
 
 function addplotRK4(component) {
@@ -470,7 +511,7 @@ function addplotRK4(component) {
     
 
     let resultdynode = dynodeRK4(componentArray, interval, steps);
-    let plt = board.create('curve', [resultdynode.time, resultdynode.results[j]], { strokeColor: component.color, strokeWidth: 2, name: component.componentName});
+    let plt = board.create('curve', [resultdynode.time, resultdynode.results[j + 1]], { strokeColor: component.color, strokeWidth: 2, name: component.componentName});
     plt.updateDataArray = function() {
         let j = component.componentlocation;
         let data
@@ -481,9 +522,13 @@ function addplotRK4(component) {
         calctracker++;
         if (calctracker === componentArray.length) {
             calctracker = 0;
+            vplot.setData([data.time,data.results[0]])
+            let concentrationdata = calcconcentration(data)
+            //seriesarr(componentArray, cplot)
+            cplot.setData(concentrationdata)
         }
         this.dataX = data.time;
-        this.dataY = data.results[j];
+        this.dataY = data.results[j + 1];
     }
     plotmap.set(component, plt);
 
@@ -499,24 +544,6 @@ function calcconcentration(data) {
     }
 
     return concentration
-}
-
-function seriesarr(componentArray, plot) {
-    let seriesarr = [];
-    seriesarr.push({
-        label: 'time'
-    })
-    for(let i = 0; i < componentArray.length; i++) {
-        let series = {
-            label: null,
-            stroke: null
-        }
-        let sidx = componentArray[i].componentlocation;
-        series.label = componentArray[i].componentName;
-        series.stroke = componentArray[i].color;
-        seriesarr.push(series);
-    }
-    return seriesarr
 }
 
 function addseriesuplot(component, plot) {
@@ -697,7 +724,7 @@ function createreaction(reactioncomponents, coeffiencts, kvalue) {
 
 }
 
-function deletereaction(id) {
+function deletereaction(id, isreset=false) {
     /*side effects to be removed when the reaction is removed:
         - a function gets stored in the rx array for all the components in the reaction
         -a reaction div element is created
@@ -725,7 +752,10 @@ function deletereaction(id) {
 
     reactiondiv.innerHTML = ""
     reactiondiv.parentNode.removeChild(reactiondiv);
-    board.update()
+    if (!isreset){
+        board.update()
+    }
+    
 
 
     
@@ -779,6 +809,21 @@ function deletecomponent(id) {
 
 function testupdate() {
     board.update();
+}
+
+function resetboard(){
+    reactionidmap.forEach(e => {
+        let id = e.id;
+        deletereaction(id, true)
+    });
+    reactor.initialvolume = 1;
+    document.getElementById('initialvolume').value = 1;
+    reactor.vin = 0;
+    document.getElementById('vin').value = 0;
+    reactor.vout = 0;
+    document.getElementById('vout').value = 0;
+    board.update();
+    alert("Error\n Page was reset");
 }
 
 function changesolver(solver) {

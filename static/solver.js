@@ -57,11 +57,19 @@ function runrkf45(f, interval, y_init, h_init = 0.1, tol = 0.015) {
     let y = y_init;
     let hmin = 0.0001
     let hmax = 0.5
+    let c = 0;
 
     t_res = [t];
     y_res = [y];
 
     while (t < tf) {
+        c++
+        if (!(c % 100000)) {
+            console.log(c);
+            alert('calculation took to long')
+            break;
+            
+        }
         let {y4, y5} = rkf45(f, t, y, h )
         //local error estimate
         let e = y5.map((y5,i) => Math.abs(y5- y4[i]));

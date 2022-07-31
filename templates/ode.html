@@ -32,8 +32,29 @@
     <div id='content'>
     <div class='wrapjxg'>
         <div id="jxgbox" class="jxgbox"></div>
+        <details><summary>
+            <p class="plotlabel">
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-chart-line" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="#000000" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                    <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                    <line x1="4" y1="19" x2="20" y2="19" />
+                    <polyline points="4 15 8 9 12 11 16 6 20 10" />
+                  </svg>
+                Concentration</p>
+        </summary>
+            <div id="coutplot" class="plotbox"></div>
+        </details>
+        <details><summary>
+            <p class="plotlabel">
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-chart-line" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="#000000" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                    <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                    <line x1="4" y1="19" x2="20" y2="19" />
+                    <polyline points="4 15 8 9 12 11 16 6 20 10" />
+                  </svg>
+                Volume</p>
+        </summary>
         <div id="vplot" class="plotbox"></div>
-        <div id="coutplot" class="plotbox"></div>
+        </details>
+        
     </div>
     <div id="setup">
         <details open><summary>
@@ -49,11 +70,11 @@
             </p></summary>
             <div id=reactor class='settingbox'>
                 <label for='initialvolume' id='vinilabel'>Initial Volume</label>
-                <input id='initialvolume' type="number" min=0 max=100 value="2" step=1 required onchange="reactor.initialvolume = Number(this.value);board.update();">
-                <label for='vin' id='vinlabel'>Volume in</label>
-                <input id='vin' type="number" min=0 max=100 value="1" step=1 required onchange="reactor.vin = Number(this.value);board.update();">
-                <label for='vout' id='voutlabel'>Volume out</label>
-                <input id='vout' type="number" min=0 max=100 value="1" step=1 required onchange="reactor.vout = Number(this.value);board.update();">
+                <input id='initialvolume' type="number" min=1 max=100 value="1" step=1 required onchange="reactor.initialvolume = Number(this.value);board.update();">
+                <label for='vin' id='vinlabel'>V in(t, V)=</label>
+                <input id='vin' type="text" value="0" onchange="updatejcfvin(this.value)">
+                <label for='vout' id='voutlabel'>V out(t, V)=</label>
+                <input id='vout' type="text" value="0" onchange="updatejcfvout(this.value)">
             </div></details>
         <details open><summary>
         <p class="settinglabel">
@@ -117,7 +138,7 @@
                 <option>rk4</option>
             </select>
             <label for='tf' id='timelabel'>Time</label>
-            <input id='tf' type="number" min=0 max=100 value="10" step=1 required onchange="tf = this.value; interval = [0,tf];board.update();">
+            <input id='tf' type="number" min=0 max=100 value="10" step=1 required onchange="settf(this.value)">
             <label for='points' id='pointslabel' hidden>Data Points</label>
             <input id='points' type="number" min=50 max=999 value="100" step=10 required onchange="steps = this.value;board.update();" hidden>
             <p id='tolerance' class='infotext'>Tolerance:   0.015</p>
