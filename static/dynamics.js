@@ -51,6 +51,14 @@ let uplotopts = {
         {
             label: "Volume",
             stroke: "red"
+        },
+        {
+            label: "V in",
+            stroke: "blue"
+        },
+        {
+            label: "V out",
+            stroke: "green"
         }
     ]
 }
@@ -70,7 +78,7 @@ let uplotopts2 = {
     ]
 }
 
-var uplotdata = [[],[]];
+var uplotdata = [[],[],[],[]];
 var uplotdata2 = [[]]
 let plotelement = document.getElementById("vplot");
 let vplot = new uPlot(uplotopts,uplotdata, plotelement)
@@ -527,7 +535,8 @@ function addplotRK4(component) {
         calctracker++;
         if (calctracker === componentArray.length) {
             calctracker = 0;
-            vplot.setData([data.time,data.results[0]])
+            let flowdata = calcflow(data)
+            vplot.setData([data.time,data.results[0], flowdata.vindata, flowdata.voutdata])
             let concentrationdata = calcconcentration(data)
             //seriesarr(componentArray, cplot)
             cplot.setData(concentrationdata)
@@ -549,6 +558,24 @@ function calcconcentration(data) {
     }
 
     return concentration
+}
+
+function calcflow(data) {
+    let time = data.time
+    let vol = data.results[0]
+
+    let vindata = []
+    let voutdata = []
+
+    for(let i =0; i < time.length; i++) {
+        vindata.push(reactor.fvin(time[i],vol[i]))
+        voutdata.push(reactor.fvout(time[i], vol[i]))
+    }
+
+    return {
+        vindata,
+        voutdata
+    }
 }
 
 function addseriesuplot(component, plot) {
@@ -579,7 +606,8 @@ function addplotRKF45(component) {
         calctracker++;
         if (calctracker === componentArray.length) {
             calctracker = 0;
-            vplot.setData([data.time,data.results[0]])
+            let flowdata = calcflow(data)
+            vplot.setData([data.time,data.results[0], flowdata.vindata, flowdata.voutdata])
             let concentrationdata = calcconcentration(data)
             //seriesarr(componentArray, cplot)
             cplot.setData(concentrationdata)
@@ -734,7 +762,7 @@ function deletereaction(id, isreset=false) {
         - a function gets stored in the rx array for all the components in the reaction
         -a reaction div element is created
         - reaction is stored in reaction array
-        -reaction is stored in reactionidmap
+        -reaction is stored in reactionidmap (why are these not removed? //todo)
 
     */
 
@@ -754,9 +782,10 @@ function deletereaction(id, isreset=false) {
         }
 
     }
-
+    if (reactiondiv !== null) {
     reactiondiv.innerHTML = ""
     reactiondiv.parentNode.removeChild(reactiondiv);
+    }
     if (!isreset){
         board.update()
     }
