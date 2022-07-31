@@ -305,3 +305,10 @@ summary {
 	font-size: 0.8em;
 	font-style: italic;
 }
+
+#advrkf45 {
+	display: flex;
+	flex-direction: column;
+	font-size: 0.8em;
+	font-style: italic;
+}

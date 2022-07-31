@@ -50,13 +50,11 @@ function rkf45(f, t, y, h) {
 }
 
 
-function runrkf45(f, interval, y_init, h_init = 0.1, tol = 0.015) {
+function runrkf45(f, interval, y_init, h_init = 0.1, tol = 0.015, hmin = 0.0001, hmax = 0.5) {
     let t = interval[0];
     const tf = interval[1];
     let h = h_init;
     let y = y_init;
-    let hmin = 0.0001
-    let hmax = 0.5
     let c = 0;
 
     t_res = [t];

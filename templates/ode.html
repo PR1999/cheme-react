@@ -141,8 +141,25 @@
             <input id='tf' type="number" min=0 max=100 value="10" step=1 required onchange="settf(this.value)">
             <label for='points' id='pointslabel' hidden>Data Points</label>
             <input id='points' type="number" min=50 max=999 value="100" step=10 required onchange="steps = this.value;board.update();" hidden>
-            <p id='tolerance' class='infotext'>Tolerance:   0.015</p>
-            <p id='hinit' class='infotext'>Inital step size:    0.1</p>
+            <button id= "resetbutton" class="button" onclick="resetboard()">
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-refresh-alert" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="#000000" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                    <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                    <path d="M20 11a8.1 8.1 0 0 0 -15.5 -2m-.5 -4v4h4" />
+                    <path d="M4 13a8.1 8.1 0 0 0 15.5 2m.5 4v-4h-4" />
+                    <line x1="12" y1="9" x2="12" y2="12" />
+                    <line x1="12" y1="15" x2="12.01" y2="15" />
+                </svg>
+            </button>
+            <div id="advrkf45">
+                <label for='tolerance' id='tolerancelabel'>tolerance
+                <input id='tolerance' type="number" min=0 max=100 value="0.015" step=0.005 required onchange="settolerance(this.value)"></label>
+                <label for='hinit' id='hinitlabel'>initial step size
+                <input id='hinit' type="number" min=0 max=100 value="0.1" step=0.05 required onchange="sethinit(this.value)"></label>
+                <label for='hmin' id='hminlabel'>min. step size
+                <input id='hmin' type="number" min=0 max=100 value="0.0001" step=0.00005 required onchange="sethmin(this.value)"></label>
+                <label for='hmax' id='hmaxlabel'>max. step size
+                <input id='hmax' type="number" min=0 max=100 value="0.5" step=0.1 required onchange="sethmax(this.value)"></label>
+            </div>
             
         </div></details>
         <details open><summary>

@@ -387,6 +387,7 @@ function uxchangesolver(sel) {
             document.getElementById('pointslabel').hidden = 'true';
             document.getElementById('tolerance').style.display = 'inline-block';
             document.getElementById('hinit').style.display = 'inline-block';
+            document.getElementById('advrkf45').style.display = 'flex'
             
             break;
         case 'rk4' :
@@ -394,6 +395,57 @@ function uxchangesolver(sel) {
             document.getElementById('pointslabel').removeAttribute('hidden');
             document.getElementById('tolerance').style.display = 'none';
             document.getElementById('hinit').style.display = 'none';
+            document.getElementById('advrkf45').style.display = 'none'
             break;
     }
+}
+
+function settolerance(val) {
+    let isnumber = (Number.isNaN(Number(val)) ? false : Number.isFinite(Number(val)) && Number(val) > 0)
+    if (isnumber) {
+        toleranceinput = Number(val)
+        board.update()
+    }
+    else {
+        document.getElementById("tolerance").value = toleranceinput;
+    }
+
+}
+
+function sethinit(val) {
+    let isnumber = (Number.isNaN(Number(val)) ? false : Number.isFinite(Number(val)) && Number(val) > 0)
+    if (isnumber) {
+        hinitinput = Number(val)
+        board.update()
+    }
+    else {
+        document.getElementById("hinit").value = hinitinput;
+    }
+
+}
+
+function sethmax(val) {
+    let isnumber = (Number.isNaN(Number(val)) ? false : Number.isFinite(Number(val)) && Number(val) > 0)
+    let ismax = ((Number(val) > hmininput) && (Number(val) >= hinitinput));
+    if (isnumber && ismax) {
+        hmaxinput = Number(val)
+        board.update()
+    }
+    else {
+        document.getElementById("hmax").value = hmaxinput;
+    }
+
+}
+
+function sethmin(val) {
+    let isnumber = (Number.isNaN(Number(val)) ? false : Number.isFinite(Number(val)) && Number(val) > 0)
+    let ismin = ((Number(val) < hmaxinput) && (Number(val) <= hinitinput));
+    if (isnumber && ismin) {
+        hmininput = Number(val)
+        board.update()
+    }
+    else {
+        document.getElementById("hmin").value = hmininput;
+    }
+
 }
