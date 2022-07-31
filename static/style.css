@@ -321,3 +321,8 @@ summary {
 .answer {
 	max-width: 400px;
 }
+.about {
+	max-width: 90vw;
+	width: 500px;
+	
+}
