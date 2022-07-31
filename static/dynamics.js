@@ -83,6 +83,11 @@ var reactionArray = [];
 var reactionidmap = new Map();
 let plotmap = new WeakMap()
 var calctracker = 0;
+var toleranceinput = 0.015;
+var hinitinput = 0.1;
+var hmininput = 0.0001;
+var hmaxinput = 0.5;
+var cmaxinput = 100000;
 let currentresult
 
 var reactor = {
@@ -312,7 +317,7 @@ function dynodeRKF45(components, interval, tolerance) {
         initialvalues.push(components[i].Nx0.Y())
     }
 
-    let data = runrkf45(rsidewithvol,interval,initialvalues);
+    let data = runrkf45(rsidewithvol,interval,initialvalues,hinitinput, toleranceinput, hmininput, hmaxinput);
     runcounter++;
     let time = data.t_res;
     let results = [];
